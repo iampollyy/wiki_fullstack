@@ -1,10 +1,12 @@
-
+import { AppRoutes } from "../router/routes"
 function App() {
 
   return (
-    <>
-      Hello World!
-    </>
+      <main id="skip-to-content">
+        <section className="content">
+          <AppRoutes/>
+        </section>
+      </main>
   )
 }
 
