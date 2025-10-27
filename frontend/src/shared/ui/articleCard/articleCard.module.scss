@@ -9,7 +9,9 @@
   position: relative;
 }
 .listing a{
-  color:#45159D;
+    font-size: 1.5rem;
+    color: #000000;
+    font-weight: 700;
 }
 .listing:focus-within {
   box-shadow: 0 0 0 0.2em var(--primary-color);

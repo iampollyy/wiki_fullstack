@@ -1,8 +1,15 @@
-/*colors*/
+
 :root {
+  font-family: 'Poppins', sans-serif;
+
+
+  /*colors*/
   --primary-color: #000000;
   --secondary-color: #ffffff;
   --accent-color: #D0A84A;
+
+  --hover-color-primary: #313131;
+  --hover-color-secondary: #898989;
 }
 
 .sr-only {

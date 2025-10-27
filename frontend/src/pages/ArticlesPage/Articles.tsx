@@ -21,7 +21,7 @@ export const Articles = () => {
       </h2>
 
       <ul className={styles.articlesList}>
-        {articles.map((article) => (
+        {articles.sort((a, b) => a.title.localeCompare(b.title)).map((article) => (
           <li key={article.id}>
             <ArticleCard article={article} />
           </li>
