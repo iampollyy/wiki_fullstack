@@ -18,6 +18,17 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "strict": false
+    ,
+    "baseUrl": ".",
+    "paths": {
+      "@styles/*": ["src/styles/*"],
+      "@assets/*": ["src/assets/*"],
+      "@core/*": ["src/core/*"],
+      "@entities/*": ["src/entities/*"],
+      "@features/*": ["src/features/*"],
+      "@pages/*": ["src/pages/*"],
+      "@shared/*": ["src/shared/*"]
+    }
   },
   "include": ["src", "env.d.ts"],
   "exclude": ["node_modules", "dist"]
