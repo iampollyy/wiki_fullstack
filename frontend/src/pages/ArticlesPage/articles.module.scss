@@ -1,0 +1,17 @@
+.articlesList {
+  display: grid;
+  column-gap: 0.875rem;
+  row-gap: 0.875rem;
+  grid-template-columns: repeat(auto-fill, minmax(25rem, 25rem));
+  margin-top: 3.125rem;
+  justify-content: space-around;
+
+    @media (max-width:768px){
+      grid-template-columns: 1fr 1fr;
+
+    }
+
+    @media(max-width:400px) {
+      grid-template-columns: 1fr;
+  }
+}

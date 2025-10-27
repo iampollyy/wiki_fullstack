@@ -1,0 +1,79 @@
+.listing {
+  background: var(--secondary-color);
+  border-radius: 1.875rem;
+  padding-bottom: 1.875rem;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  position: relative;
+}
+.listing a{
+  color:#45159D;
+}
+.listing:focus-within {
+  box-shadow: 0 0 0 0.2em var(--primary-color);
+}
+.listing a:focus {
+  text-decoration: underline;
+}
+
+.listing:focus-within a:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+.listing:hover {
+  box-shadow: 0 0 0 0.2em var(--primary-color);
+}
+
+.listing h2 a:focus {
+  text-decoration: underline;
+}
+
+
+.listing:focus-within h2 a:focus {
+  text-decoration: none;
+  outline: 0.25rem solid #45159D;
+  border-radius: 0.1875rem;
+}
+
+.listing a:visited {
+  color: #2D0F70;
+}
+
+.listing a:after{
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.listing .text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 0.625rem 1.25rem;
+  max-width: 60ch;
+}
+
+.listing .text > * + * {
+  margin-top: 0.75rem;
+}
+
+.listing .text :last-child {
+  margin-top: auto;
+}
+
+.listing .text :nth-last-child(2) {
+  margin-bottom: 0.75rem;
+}
+
+.content-description {
+  color: var(--primary-color);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow: hidden;
+}

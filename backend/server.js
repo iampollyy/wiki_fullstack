@@ -22,7 +22,7 @@ const getArticles = () => {
     const filePath = path.join(DATA_FOLDER, file);
     const content = fs.readFileSync(filePath, 'utf-8');
     const data = JSON.parse(content);
-    return { id: file.replace('.json', ''), title: data.title };
+    return { id: file.replace('.json', ''), title: data.title, birthYear: data.birthYear, nationality: data.nationality, occupation: data.occupation, knownFor: data.knownFor, content: data.content};
   });
 }
 
@@ -53,7 +53,7 @@ app.get('/articles/:id', (req, res) => {
 
 
 app.post('/articles', (req, res) => {
-  const { title, birthYear, nationality, occupation, knownFor, content } = req.body;
+  const { id, title, birthYear, nationality, occupation, knownFor, content } = req.body;
   
   if (!title || !content) {
     return res.status(400).json({ error: 'Title and content are required' });
@@ -61,7 +61,7 @@ app.post('/articles', (req, res) => {
 
   const articleId = Date.now().toString();
   const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
-  const articleData = { title, birthYear, nationality, occupation, knownFor, content };
+  const articleData = { id: articleId, title, birthYear, nationality, occupation, knownFor, content };
 
   fs.writeFileSync(filePath, JSON.stringify(articleData));
   res.status(201).json({ id: articleId, message: 'Article created' });
