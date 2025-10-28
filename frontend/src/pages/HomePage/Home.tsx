@@ -20,7 +20,7 @@ export const Home = () => {
         </h2>
 
         <div className={styles.home__images}>
-          <img src="./public/logo.svg" alt="" />
+          <img src="/src/assets/icons/logo.svg" alt="" />
           <img src="src/assets/images/subtract.svg" alt="" />  
         </div>
  

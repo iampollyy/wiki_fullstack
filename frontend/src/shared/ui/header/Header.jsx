@@ -6,7 +6,7 @@ export const Header = () => {
     return (
       <header className={styles.header}>
         <Link to="/" aria-label="'Navigate to home page'" className={styles.logoLink}>
-              <img className={styles.Logo} src="./public/logo.svg" alt="" />
+              <img className={styles.Logo} src="src/assets/icons/logo.svg" alt="" />
         </Link>
         <Button size="sm">
            +
