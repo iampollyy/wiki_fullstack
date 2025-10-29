@@ -2,6 +2,8 @@
 
 Detailed guide for the Wiki Fullstack project.
 
+**#Final Design Look
+**https://www.figma.com/design/QMyUMry6eVa5fhLl2Sx9wK/Wikipedia-Redesign-NodeJS-Project?node-id=0-1&p=f&m=dev
 ## Overview
 
 This is a tutorial fullstack project built with Node.js (Express) — a simple wiki/blog system where articles are stored as JSON files on the server. The project separates backend and frontend:
