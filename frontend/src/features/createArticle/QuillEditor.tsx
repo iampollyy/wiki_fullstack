@@ -1,25 +1,25 @@
-import { Button } from '@shared/ui/button/Button';
-import { useState } from 'react';
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
-import styles from './quillEditor.module.scss';
+import { Button } from "@shared/ui/button/Button";
+import { useState } from "react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import styles from "./quillEditor.module.scss";
 
 export function QuillEditor() {
-  const [title, setTitle] = useState('');
-  const [birthYear, setBirthYear] = useState('');
-  const [nationality, setNationality] = useState('');
-  const [occupation, setOccupation] = useState('');
-  const [knownFor, setKnownFor] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [birthYear, setBirthYear] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [knownFor, setKnownFor] = useState("");
+  const [content, setContent] = useState("");
 
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, 5, false] }],
-      ["bold", "italic", "underline", "strike"], 
+      ["bold", "italic", "underline", "strike"],
       [{ color: [] }, { background: [] }],
-      [{ script: "sub" }, { script: "super" }], 
-      [{ list: "ordered" }, { list: "bullet" }], 
-      [{ indent: "-1" }, { indent: "+1" }], 
+      [{ script: "sub" }, { script: "super" }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }],
       [{ align: [] }],
       ["blockquote", "code-block"],
       ["link", "image", "video"],
@@ -28,10 +28,23 @@ export function QuillEditor() {
   };
 
   const formats = [
-    "header", "bold", "italic", "underline", "strike",
-    "color", "background", "script", "list", "bullet",
-    "indent", "align", "blockquote", "code-block", 
-    "link", "image", "video",
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "color",
+    "background",
+    "script",
+    "list",
+    "bullet",
+    "indent",
+    "align",
+    "blockquote",
+    "code-block",
+    "link",
+    "image",
+    "video",
   ];
 
   const handleSubmit = async () => {
@@ -50,24 +63,24 @@ export function QuillEditor() {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/articles', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/articles", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(articleData),
       });
 
       if (response.ok) {
         const result = await response.json();
-        setTitle('');
-        setBirthYear('');
-        setNationality('');
-        setOccupation('');
-        setKnownFor('');
-        setContent('');
+        setTitle("");
+        setBirthYear("");
+        setNationality("");
+        setOccupation("");
+        setKnownFor("");
+        setContent("");
       } else {
-        alert('Error saving article');
+        alert("Error saving article");
       }
     } catch (err) {
       console.error(err);
@@ -126,7 +139,7 @@ export function QuillEditor() {
         className={`h-64 mb-6 ${styles.quillEditor}`}
       />
 
-      <Button size='sm' onClick={handleSubmit}>
+      <Button size="sm" onClick={handleSubmit}>
         Add Article
       </Button>
     </div>

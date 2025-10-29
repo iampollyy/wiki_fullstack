@@ -1,12 +1,10 @@
-
 :root {
-  font-family: 'Poppins', sans-serif;
-
+  font-family: "Poppins", sans-serif;
 
   /*colors*/
   --primary-color: #000000;
   --secondary-color: #ffffff;
-  --accent-color: #D0A84A;
+  --accent-color: #d0a84a;
 
   --hover-color-primary: #313131;
   --hover-color-secondary: #d9d9d9;

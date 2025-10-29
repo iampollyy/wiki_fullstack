@@ -17,8 +17,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": false
-    ,
+    "strict": false,
     "baseUrl": "src",
     "paths": {
       "@styles/*": ["styles/*"],

@@ -1,13 +1,11 @@
-import { Button } from '@shared/ui/button/Button'
-import styles from './home.module.scss'
-import {useNavigate} from "react-router-dom";
-
+import { Button } from "@shared/ui/button/Button";
+import styles from "./home.module.scss";
+import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
   const navigate = useNavigate();
   function onGoToArticlesClick() {
-    navigate('/articles')
-
+    navigate("/articles");
   }
 
   return (
@@ -21,14 +19,14 @@ export const Home = () => {
 
         <div className={styles.home__images}>
           <img src="/src/assets/icons/logo.svg" alt="" />
-          <img src="src/assets/images/subtract.svg" alt="" />  
+          <img src="src/assets/images/subtract.svg" alt="" />
         </div>
- 
 
-      <Button onClick={onGoToArticlesClick}>Go to articles <span className="material-symbols-outlined">trending_flat
-        </span>
+        <Button onClick={onGoToArticlesClick}>
+          Go to articles{" "}
+          <span className="material-symbols-outlined">trending_flat</span>
         </Button>
       </section>
     </>
-  )
-}
+  );
+};

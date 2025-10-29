@@ -6,12 +6,11 @@
   margin-top: 3.125rem;
   justify-content: space-around;
 
-    @media (max-width:768px){
-      grid-template-columns: 1fr 1fr;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
 
-    }
-
-    @media(max-width:400px) {
-      grid-template-columns: 1fr;
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
   }
 }

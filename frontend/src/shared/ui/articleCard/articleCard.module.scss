@@ -8,10 +8,10 @@
   transition: box-shadow 0.2s ease;
   position: relative;
 }
-.listing a{
-    font-size: 1.5rem;
-    color: #000000;
-    font-weight: 700;
+.listing a {
+  font-size: 1.5rem;
+  color: #000000;
+  font-weight: 700;
 }
 .listing:focus-within {
   box-shadow: 0 0 0 0.2em var(--primary-color);
@@ -33,24 +33,23 @@
   text-decoration: underline;
 }
 
-
 .listing:focus-within h2 a:focus {
   text-decoration: none;
-  outline: 0.25rem solid #45159D;
+  outline: 0.25rem solid #45159d;
   border-radius: 0.1875rem;
 }
 
 .listing a:visited {
-  color: #2D0F70;
+  color: #2d0f70;
 }
 
-.listing a:after{
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
+.listing a:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .listing .text {

@@ -1,10 +1,9 @@
-import { Header } from '@shared/ui/header/Header'
-export const Layout: React.FC <React.PropsWithChildren>= ({children}) => {
+import { Header } from "@shared/ui/header/Header";
+export const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <>
-    <Header/>
+      <Header />
       {children}
     </>
-
-  )
-}
+  );
+};

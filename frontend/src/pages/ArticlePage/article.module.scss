@@ -5,21 +5,18 @@
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
-    
   }
- &__title {
-  font-size: 2rem;
-  font-weight: bold;
- }
+  &__title {
+    font-size: 2rem;
+    font-weight: bold;
+  }
   &__subtitle {
-  font-size: 1.5rem;
-  margin-top: 10px;
-  font-weight: semi-bold;
-}
+    font-size: 1.5rem;
+    margin-top: 10px;
+    font-weight: semi-bold;
+  }
   &__text {
-  font-size: 1rem;
-  line-height: 1.5;
- }
+    font-size: 1rem;
+    line-height: 1.5;
+  }
 }
-
-

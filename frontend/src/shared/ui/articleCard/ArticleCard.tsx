@@ -18,8 +18,7 @@ export const ArticleCard = ({ article }: { article: IArticle }) => {
           dangerouslySetInnerHTML={{
             __html: article.content.slice(0, 200) + "...",
           }}
-        >
-        </p>
+        ></p>
       </div>
     </section>
   );
