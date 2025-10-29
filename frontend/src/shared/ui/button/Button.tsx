@@ -2,7 +2,7 @@ import styles from './button.module.scss'
 
 
 type TbuttonSize = "sm" | "md" | "lg";
-type TbuttonVariant = "primary" | "secondary";
+type TbuttonVariant = "primary" | "secondary" | "tertiary";
 type  TbuttonProps = {
     children: React.ReactNode;
     type?: "button" | "submit" | "reset";

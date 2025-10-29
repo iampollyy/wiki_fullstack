@@ -53,7 +53,7 @@ app.get('/articles/:id', (req, res) => {
 
 
 app.post('/articles', (req, res) => {
-  const { id, title, birthYear, nationality, occupation, knownFor, content } = req.body;
+  const {title, birthYear, nationality, occupation, knownFor, content } = req.body;
   
   if (!title || !content) {
     return res.status(400).json({ error: 'Title and content are required' });
@@ -61,7 +61,7 @@ app.post('/articles', (req, res) => {
 
   const articleId = Date.now().toString();
   const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
-  const articleData = { id: articleId, title, birthYear, nationality, occupation, knownFor, content };
+  const articleData = { id: articleId, title, birthYear, nationality, occupation, knownFor: knownFor.replaceAll(" ","").split(',') || [], content };
 
   fs.writeFileSync(filePath, JSON.stringify(articleData));
   res.status(201).json({ id: articleId, message: 'Article created' });

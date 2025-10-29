@@ -12,7 +12,7 @@ export const Articles = () => {
             })
             .then(data => setArticles(data))
             .catch(error => console.error(error));
-    }, []);
+    },[]);
   
   return (
     <section aria-labelledby="articlesListRes" className={styles.articlesPage}>
