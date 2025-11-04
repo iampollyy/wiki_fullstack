@@ -60,8 +60,42 @@ const createArticle = ({
   return articleId;
 };
 
+const updateArticle = (id, updatedData) => {
+  const filePath = path.join(DATA_FOLDER, `${id}.json`);
+  if (!fs.existsSync(filePath)) {
+    throw new Error("Article not found");
+  }
+  const content = fs.readFileSync(filePath, "utf-8");
+  const article = JSON.parse(content);
+  if (
+    updatedData.hasOwnProperty("knownFor") &&
+    typeof updatedData.knownFor === "string"
+  ) {
+    updatedData.knownFor = updatedData.knownFor
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+  }
+
+  const newArticle = { ...article, ...updatedData };
+  fs.writeFileSync(filePath, JSON.stringify(newArticle, null, 2));
+  return newArticle;
+};
+
+const deleteArticle = (id) => {
+  const filePath = path.join(DATA_FOLDER, `${id}.json`);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    return true;
+  }
+
+  return false;
+};
+
 module.exports = {
   getArticles,
   getArticleById,
   createArticle,
+  updateArticle,
+  deleteArticle,
 };
