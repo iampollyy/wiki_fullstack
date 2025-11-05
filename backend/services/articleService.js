@@ -15,10 +15,6 @@ const getArticles = () => {
     return {
       id: file.replace(".json", ""),
       title: data.title,
-      birthYear: data.birthYear,
-      nationality: data.nationality,
-      occupation: data.occupation,
-      knownFor: data.knownFor,
       content: data.content,
     };
   });
@@ -30,14 +26,7 @@ const getArticleById = (id) => {
   return JSON.parse(content);
 };
 
-const createArticle = ({
-  title,
-  birthYear,
-  nationality,
-  occupation,
-  knownFor,
-  content,
-}) => {
+const createArticle = ({ title, content }) => {
   const articleId = Date.now().toString();
   const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
   const knownForInput = knownFor || "";
@@ -49,10 +38,6 @@ const createArticle = ({
   const articleData = {
     id: articleId,
     title,
-    birthYear,
-    nationality,
-    occupation,
-    knownFor: knownForList,
     content,
   };
 
@@ -67,16 +52,6 @@ const updateArticle = (id, updatedData) => {
   }
   const content = fs.readFileSync(filePath, "utf-8");
   const article = JSON.parse(content);
-  if (
-    updatedData.hasOwnProperty("knownFor") &&
-    typeof updatedData.knownFor === "string"
-  ) {
-    updatedData.knownFor = updatedData.knownFor
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-  }
-
   const newArticle = { ...article, ...updatedData };
   fs.writeFileSync(filePath, JSON.stringify(newArticle, null, 2));
   return newArticle;
