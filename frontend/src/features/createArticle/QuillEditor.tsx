@@ -25,14 +25,6 @@ export function QuillEditor({
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
 
-  useEffect(() => {
-    if (initialData) {
-     
-      setTitle(initialData?.title ?? "");
-      setContent(initialData?.content ?? "");
-    }
-  }, [initialData]);
-
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, 5, false] }],

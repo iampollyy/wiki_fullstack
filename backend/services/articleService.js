@@ -29,11 +29,6 @@ const getArticleById = (id) => {
 const createArticle = ({ title, content }) => {
   const articleId = Date.now().toString();
   const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
-  const knownForInput = knownFor || "";
-  const knownForList = knownForInput
-    .split(",")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
 
   const articleData = {
     id: articleId,
