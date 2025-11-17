@@ -1,16 +1,29 @@
 import { Button } from "@shared/ui/button/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import styles from "./quillEditor.module.scss";
 
-export function QuillEditor() {
-  const [title, setTitle] = useState("");
-  const [birthYear, setBirthYear] = useState("");
-  const [nationality, setNationality] = useState("");
-  const [occupation, setOccupation] = useState("");
-  const [knownFor, setKnownFor] = useState("");
-  const [content, setContent] = useState("");
+interface QuillEditorProps {
+  mode?: "create" | "edit";
+  initialData?: any;
+  articleId?: string | number;
+  onSubmitSuccess?: (data: any) => void;
+  onCancel?: () => void;
+  isBeingEdited?: boolean;
+}
+
+export function QuillEditor({
+  mode = "create",
+  initialData = {},
+  articleId,
+  onSubmitSuccess,
+  onCancel,
+  isBeingEdited = false,
+}: QuillEditorProps) {
+  
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [content, setContent] = useState(initialData?.content ?? "");
 
   const modules = {
     toolbar: [
@@ -48,48 +61,53 @@ export function QuillEditor() {
   ];
 
   const handleSubmit = async () => {
-    if (!title || !content) {
-      alert("Введите заголовок и содержимое статьи!");
+    if (!title.trim() || !content.trim()) {
+      alert("Please enter a title and content for the article!");
       return;
     }
 
     const articleData = {
       title,
-      birthYear,
-      nationality,
-      occupation,
-      knownFor,
       content,
     };
 
+    const isEdit = mode === "edit" && articleId;
+    const url = isEdit
+      ? `http://localhost:5000/articles/${articleId}`
+      : "http://localhost:5000/articles";
+    const method = isEdit ? "PUT" : "POST";
+
     try {
-      const response = await fetch("http://localhost:5000/articles", {
-        method: "POST",
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(articleData),
       });
 
-      if (response.ok) {
-        const result = await response.json();
+      if (!response.ok) {
+        throw new Error(`Error saving article (${response.status})`);
+      }
+
+      const result = await response.json();
+      if (onSubmitSuccess) onSubmitSuccess(result);
+
+      if (mode === "create") {
         setTitle("");
-        setBirthYear("");
-        setNationality("");
-        setOccupation("");
-        setKnownFor("");
         setContent("");
-      } else {
-        alert("Error saving article");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error saving article:", err);
+      alert("Failed to save article.");
     }
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h2 className={styles.article__title}>Create a new article</h2>
+    <>
+      <h2 className={styles.article__title}>
+        {mode === "edit" ? "Edit article" : "Create a new article"}
+      </h2>
 
       <input
         type="text"
@@ -98,38 +116,6 @@ export function QuillEditor() {
         onChange={(e) => setTitle(e.target.value)}
         className="w-full border rounded p-2 mb-3"
       />
-
-      <div className={styles.metadata__inputs}>
-        <input
-          type="text"
-          placeholder="Birth Year"
-          value={birthYear}
-          onChange={(e) => setBirthYear(e.target.value)}
-          className="border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Nationality"
-          value={nationality}
-          onChange={(e) => setNationality(e.target.value)}
-          className="border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Profession"
-          value={occupation}
-          onChange={(e) => setOccupation(e.target.value)}
-          className="border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Known for"
-          value={knownFor}
-          onChange={(e) => setKnownFor(e.target.value)}
-          className="border rounded p-2"
-        />
-      </div>
-
       <ReactQuill
         theme="snow"
         value={content}
@@ -139,9 +125,21 @@ export function QuillEditor() {
         className={`h-64 mb-6 ${styles.quillEditor}`}
       />
 
-      <Button size="sm" onClick={handleSubmit}>
-        Add Article
-      </Button>
-    </div>
+      <div className={styles.editor__actions}>
+        <Button size="sm" onClick={handleSubmit}>
+          {mode === "edit" ? "Update" : "Add article"}
+        </Button>
+
+        {isBeingEdited && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => onCancel && onCancel()}
+          >
+            Cancel
+          </Button>
+        )}
+      </div>
+    </>
   );
 }

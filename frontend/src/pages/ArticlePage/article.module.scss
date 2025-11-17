@@ -1,5 +1,5 @@
 .article {
-  &__content {
+    &__content {
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -10,6 +10,18 @@
     font-size: 2rem;
     font-weight: bold;
   }
+  
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2rem;
+    border-top: 1px solid #969696;
+    border-bottom: 1px solid #969696;
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+  }
+
   &__subtitle {
     font-size: 1.5rem;
     margin-top: 10px;
@@ -18,5 +30,9 @@
   &__text {
     font-size: 1rem;
     line-height: 1.5;
+  }
+  &__description {
+    width: 100%;
+    padding: 10px 0;
   }
 }

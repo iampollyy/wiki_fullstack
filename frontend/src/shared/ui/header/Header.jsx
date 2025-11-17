@@ -32,7 +32,7 @@ export const Header = () => {
             >
               ✕
             </Button>
-            <QuillEditor />
+            <QuillEditor mode="create" />
           </div>
         </div>
       )}
