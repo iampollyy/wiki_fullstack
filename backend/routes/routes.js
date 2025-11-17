@@ -48,4 +48,39 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const success = articleService.deleteArticle(req.params.id);
+
+    if (!success) {
+      return res.status(404).json({ message: "The article not found" });
+    }
+
+    res.json({ message: "Article deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting article:", error);
+    res
+      .status(500)
+      .json({ message: "Error deleting article", error: error.message });
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  const id = req.params.id;
+  const updatedData = req.body;
+
+  try {
+    const updatedArticle = articleService.updateArticle(id, updatedData);
+    res.json(updatedArticle);
+  } catch (error) {
+    console.error("Error updating article:", error);
+    if (error && error.message === "Article not found") {
+      return res.status(404).json({ message: "Article not found" });
+    }
+    res
+      .status(500)
+      .json({ message: "Error updating article", error: error.message });
+  }
+});
+
 module.exports = router;

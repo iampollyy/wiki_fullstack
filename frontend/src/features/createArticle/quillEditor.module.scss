@@ -26,3 +26,10 @@
     }
   }
 }
+
+.editor__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: row;
+  align-items: center;
+}
