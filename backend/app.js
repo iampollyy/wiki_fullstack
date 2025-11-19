@@ -7,5 +7,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/articles", articleRoutes);
+app.use('/uploads', express.static('uploads'));
 
 module.exports = app;

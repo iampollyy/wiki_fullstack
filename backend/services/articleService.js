@@ -26,7 +26,7 @@ const getArticleById = (id) => {
   return JSON.parse(content);
 };
 
-const createArticle = ({ title, content }) => {
+const createArticle = ({ title, content, attachments }) => {
   const articleId = Date.now().toString();
   const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
 
@@ -34,6 +34,7 @@ const createArticle = ({ title, content }) => {
     id: articleId,
     title,
     content,
+    attachments: attachments || [],
   };
 
   fs.writeFileSync(filePath, JSON.stringify(articleData, null, 2));

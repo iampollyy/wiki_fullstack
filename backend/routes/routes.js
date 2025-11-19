@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const articleService = require("../services/articleService");
+// Import multer upload middleware for attachments
+const upload = require("../middleware/fileUpload");
 
 router.get("/", async (req, res) => {
   try {
@@ -25,8 +27,15 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { title, birthYear, nationality, occupation, knownFor, content } =
-    req.body;
+  const {
+    title,
+    birthYear,
+    nationality,
+    occupation,
+    knownFor,
+    content,
+    attachments,
+  } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({ error: "Title and content are required" });
@@ -40,6 +49,7 @@ router.post("/", async (req, res) => {
       occupation,
       knownFor,
       content,
+      attachments,
     });
     res.status(201).json({ id: articleId, message: "Article created" });
   } catch (err) {
@@ -80,6 +90,21 @@ router.put("/:id", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error updating article", error: error.message });
+  }
+});
+
+router.post("/upload-attachment", upload.single("attachment"), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const fileUrl = `/uploads/${req.file.filename}`;
+
+    res.json({ url: fileUrl });
+  } catch (err) {
+    console.error("Error uploading file:", err);
+    res.status(500).json({ error: "File upload failed" });
   }
 });
 
