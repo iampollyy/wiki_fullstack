@@ -1,15 +1,59 @@
 import { IArticle } from "@shared/ui/articleCard/model/TArticle";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./article.module.scss";
 import { Button } from "@shared/ui/button/Button";
 import { QuillEditor } from "@features/createArticle/QuillEditor";
+import { io, Socket } from "socket.io-client";
 
 export const Article = () => {
   const { id } = useParams();
   const [article, setArticle] = useState<IArticle | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const socket = io("http://localhost:5000", {
+      transports: ["websocket"],
+    });
+
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+      socket.emit("join", `article_${id}`);
+    });
+
+    socket.on("joined", (roomName: string) => {
+      console.log("Joined room", roomName);
+    });
+
+    socket.on("notification", (payload) => {
+      console.log("Socket notification:", payload);
+      alert(`Notification: ${payload.message}`);
+      setArticle(payload.article);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket connect error:", err);
+    });
+
+    return () => {
+      if (socket.connected) {
+        socket.emit("leave", `article_${id}`);
+      }
+      socket.off("notification");
+      socket.off("joined");
+      socket.disconnect();
+    };
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;

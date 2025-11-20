@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require("path");
+const { notifyRoom, ws } = require("./notificationService");
 
-const DATA_FOLDER = path.join(__dirname, "../data");
+const DATA_FOLDER = path.join(__dirname, "../../data");
 
 if (!fs.existsSync(DATA_FOLDER)) {
   fs.mkdirSync(DATA_FOLDER);
@@ -12,6 +13,7 @@ const getArticles = () => {
     const filePath = path.join(DATA_FOLDER, file);
     const content = fs.readFileSync(filePath, "utf-8");
     const data = JSON.parse(content);
+
     return {
       id: file.replace(".json", ""),
       title: data.title,
@@ -20,8 +22,8 @@ const getArticles = () => {
   });
 };
 
-const getArticleById = (id) => {
-  const filePath = path.join(DATA_FOLDER, `${id}.json`);
+const getArticleById = (articleId) => {
+  const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
   const content = fs.readFileSync(filePath, "utf-8");
   return JSON.parse(content);
 };
@@ -41,8 +43,8 @@ const createArticle = ({ title, content, attachments }) => {
   return articleId;
 };
 
-const updateArticle = (id, updatedData) => {
-  const filePath = path.join(DATA_FOLDER, `${id}.json`);
+const updateArticle = (articleId, updatedData) => {
+  const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
   if (!fs.existsSync(filePath)) {
     throw new Error("Article not found");
   }
@@ -50,11 +52,14 @@ const updateArticle = (id, updatedData) => {
   const article = JSON.parse(content);
   const newArticle = { ...article, ...updatedData };
   fs.writeFileSync(filePath, JSON.stringify(newArticle, null, 2));
+
+  notifyRoom(`article_${articleId}`, { type: "notification", article: newArticle, message: "Article has been updated!" });
+
   return newArticle;
 };
 
-const deleteArticle = (id) => {
-  const filePath = path.join(DATA_FOLDER, `${id}.json`);
+const deleteArticle = (articleId) => {
+  const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);
     return true;
