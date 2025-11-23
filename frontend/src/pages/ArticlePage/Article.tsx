@@ -5,6 +5,7 @@ import styles from "./article.module.scss";
 import { Button } from "@shared/ui/button/Button";
 import { QuillEditor } from "@features/createArticle/QuillEditor";
 import { io, Socket } from "socket.io-client";
+import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 
 export const Article = () => {
   const { id } = useParams();
@@ -121,6 +122,10 @@ export const Article = () => {
               Delete
             </Button>
           </div>
+          <FilePreviewList
+            files={article.attachments || []}
+            onRemove={() => {}}
+          />
           <div
             className={styles.article__description}
             dangerouslySetInnerHTML={{ __html: article.content }}

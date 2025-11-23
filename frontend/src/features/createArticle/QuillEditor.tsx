@@ -1,4 +1,5 @@
 import { Button } from "@shared/ui/button/Button";
+import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -25,7 +26,7 @@ export function QuillEditor({
 }: QuillEditorProps) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
-  const [attachments, setAttachments] = useState<File[]>(
+  const [attachments, setAttachments] = useState<string[]>(
     initialData?.attachments ?? []
   );
 
@@ -35,10 +36,10 @@ export function QuillEditor({
   useEffect(() => {
     const icons = Quill.import("ui/icons") as any;
     icons.attachment = `
-      <svg viewBox="0 0 18 18">
-        <path d="M4.5,8.5 l4,-4 a2.5,2.5 0 0 1 3.5,3.5 l-4,4 a1.5,1.5 0 0 1-2,-2 l4,-4" fill="none" stroke="currentColor"/>
-      </svg>
-    `;
+    <span class="material-symbols-outlined">
+     attach_file
+   </span>
+  `;
   }, []);
 
   const modules = useMemo(
@@ -53,7 +54,7 @@ export function QuillEditor({
           [{ indent: "-1" }, { indent: "+1" }],
           [{ align: [] }],
           ["blockquote", "code-block"],
-          ["link", "attachment"], // <- наша кнопка
+          ["link", "attachment"],
           ["clean"],
         ],
         handlers: {
@@ -117,35 +118,11 @@ export function QuillEditor({
       alert("Please enter a title and content for the article!");
       return;
     }
-    let attachmentUrls: string[] = [];
-
-    if (attachments.length) {
-      const formData = new FormData();
-      attachments.forEach((file) => formData.append("attachments", file));
-      try {
-        const uploadResp = await fetch(
-          "http://localhost:5000/articles/upload-attachments",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-        if (!uploadResp.ok) {
-          throw new Error(`Upload failed (${uploadResp.status})`);
-        }
-        const uploadResult = await uploadResp.json();
-        attachmentUrls = uploadResult.urls || [];
-      } catch (err) {
-        console.error("Error uploading attachments:", err);
-        alert("Failed to upload attachments.");
-        return;
-      }
-    }
 
     const articleData = {
       title,
       content,
-      attachments: attachmentUrls,
+      attachments: attachments,
     };
 
     const isEdit = mode === "edit" && articleId;
@@ -209,6 +186,15 @@ export function QuillEditor({
         style={{ display: "none" }}
         onChange={handleAttachment}
       />
+
+      <FilePreviewList
+        files={attachments}
+        onRemove={(index) => {
+          setAttachments((prev) => prev.filter((_, i) => i !== index));
+        }}
+        mode={isBeingEdited ? "edit" : "view"}
+      />
+
       <div className={styles.editor__actions}>
         <Button size="sm" onClick={handleSubmit}>
           {mode === "edit" ? "Update" : "Add article"}
