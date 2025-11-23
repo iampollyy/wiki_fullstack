@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const articleService = require("../services/articleService");
-// Import multer upload middleware for attachments
 const upload = require("../middleware/fileUpload");
 
 router.get("/", async (req, res) => {
