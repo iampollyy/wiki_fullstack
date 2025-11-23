@@ -6,6 +6,7 @@ import { Button } from "@shared/ui/button/Button";
 import { QuillEditor } from "@features/createArticle/QuillEditor";
 import { io, Socket } from "socket.io-client";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
+import { useToast } from "@shared/ui/toast/ToastContext";
 
 export const Article = () => {
   const { id } = useParams();
@@ -13,6 +14,7 @@ export const Article = () => {
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
   const socketRef = useRef<Socket | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     if (!id) return;
@@ -34,7 +36,7 @@ export const Article = () => {
 
     socket.on("notification", (payload) => {
       console.log("Socket notification:", payload);
-      alert(`Notification: ${payload.message}`);
+      toast.showInfo(`Notification: ${payload.message}`);
       setArticle(payload.article);
     });
 

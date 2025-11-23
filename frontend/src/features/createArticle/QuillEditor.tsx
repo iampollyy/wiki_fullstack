@@ -1,5 +1,6 @@
 import { Button } from "@shared/ui/button/Button";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
+import { useToast } from "@shared/ui/toast/ToastContext";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -30,6 +31,7 @@ export function QuillEditor({
     initialData?.attachments ?? []
   );
 
+  const toast = useToast();
   const quillRef = useRef<any>(null);
   const attachmentRef = useRef<HTMLInputElement | null>(null);
 
@@ -115,7 +117,7 @@ export function QuillEditor({
 
   const handleSubmit = async () => {
     if (!title.trim() || !content.trim()) {
-      alert("Please enter a title and content for the article!");
+      toast.showWarning("Please enter a title and content for the article!");
       return;
     }
 
@@ -151,10 +153,13 @@ export function QuillEditor({
         setTitle("");
         setContent("");
         setAttachments([]);
+        toast.showSuccess("Article created successfully!");
+      } else {
+        toast.showSuccess("Article updated successfully!");
       }
     } catch (err) {
       console.error("Error saving article:", err);
-      alert("Failed to save article.");
+      toast.showError("Failed to save article.");
     }
   };
 
