@@ -26,7 +26,10 @@ function fileFilter(req, file, cb) {
     "application/pdf",
   ];
   if (!allowed.includes(file.mimetype)) {
-    return cb(new Error("Only JPG, PNG, and PDF allowed"), false);
+    console.error("File type not allowed:", file.mimetype);
+    const err = new Error("Only JPG, PNG, SVG and PDF allowed");
+    err.status = 406;
+    return cb(err, false);
   }
   cb(null, true);
 }
