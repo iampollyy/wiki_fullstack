@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import styles from "./quillEditor.module.scss";
+import attach_file_icon from "@assets/icons/attach_file_icon.svg";
 
 interface QuillEditorProps {
   mode?: "create" | "edit";
@@ -38,9 +39,8 @@ export function QuillEditor({
   useEffect(() => {
     const icons = Quill.import("ui/icons") as any;
     icons.attachment = `
-    <span class="material-symbols-outlined">
-     attach_file
-   </span>
+      <img src="${attach_file_icon}" alt="Attach file" style="width:16px;height:16px;vertical-align:middle;" />
+
   `;
   }, []);
 
