@@ -12,6 +12,8 @@ dist
 dist-ssr
 data
 *.local
+frontend/node_modules/
+node_modules/
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +25,4 @@ data
 *.njsproj
 *.sln
 *.sw?
+
