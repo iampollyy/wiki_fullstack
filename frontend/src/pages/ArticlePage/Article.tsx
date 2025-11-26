@@ -1,15 +1,62 @@
 import { IArticle } from "@shared/ui/articleCard/model/TArticle";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./article.module.scss";
 import { Button } from "@shared/ui/button/Button";
-import { QuillEditor } from "@features/createArticle/QuillEditor";
+import { TextEditor } from "@features/createArticle/TextEditor";
+import { io, Socket } from "socket.io-client";
+import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
+import { useToast } from "@shared/ui/toast/ToastContext";
 
 export const Article = () => {
   const { id } = useParams();
   const [article, setArticle] = useState<IArticle | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
+  const socketRef = useRef<Socket | null>(null);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (!id) return;
+
+    const socket = io("http://localhost:5000", {
+      transports: ["websocket"],
+    });
+
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+      socket.emit("join", `article_${id}`);
+    });
+
+    socket.on("joined", (roomName: string) => {
+      console.log("Joined room", roomName);
+    });
+
+    socket.on("notification", (payload) => {
+      console.log("Socket notification:", payload);
+      toast.showInfo(`Notification: ${payload.message}`);
+      setArticle(payload.article);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket connect error:", err);
+    });
+
+    return () => {
+      if (socket.connected) {
+        socket.emit("leave", `article_${id}`);
+      }
+      socket.off("notification");
+      socket.off("joined");
+      socket.disconnect();
+    };
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -56,7 +103,7 @@ export const Article = () => {
     <section className={styles.article__content}>
       {isEditing ? (
         <>
-          <QuillEditor
+          <TextEditor
             mode="edit"
             articleId={id}
             initialData={article}
@@ -77,6 +124,10 @@ export const Article = () => {
               Delete
             </Button>
           </div>
+          <FilePreviewList
+            files={article.attachments || []}
+            onRemove={() => {}}
+          />
           <div
             className={styles.article__description}
             dangerouslySetInnerHTML={{ __html: article.content }}
