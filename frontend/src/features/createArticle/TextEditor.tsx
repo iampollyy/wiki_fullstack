@@ -1,13 +1,12 @@
 import { Button } from "@shared/ui/button/Button";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { useToast } from "@shared/ui/toast/ToastContext";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {useMemo, useRef, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import styles from "./quillEditor.module.scss";
-import attach_file_icon from "@assets/icons/attach_file_icon.svg";
+import styles from "./textEditor.module.scss";
 
-interface QuillEditorProps {
+interface TextEditorProps {
   mode?: "create" | "edit";
   initialData?: any;
   articleId?: string | number;
@@ -18,14 +17,14 @@ interface QuillEditorProps {
 
 const Quill = ReactQuill.Quill;
 
-export function QuillEditor({
+export function TextEditor({
   mode = "create",
   initialData = {},
   articleId,
   onSubmitSuccess,
   onCancel,
   isBeingEdited = false,
-}: QuillEditorProps) {
+}: TextEditorProps) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
   const [attachments, setAttachments] = useState<string[]>(
@@ -35,14 +34,6 @@ export function QuillEditor({
   const toast = useToast();
   const quillRef = useRef<any>(null);
   const attachmentRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    const icons = Quill.import("ui/icons") as any;
-    icons.attachment = `
-      <img src="${attach_file_icon}" alt="Attach file" style="width:16px;height:16px;vertical-align:middle;" />
-
-  `;
-  }, []);
 
   const modules = useMemo(
     () => ({
@@ -56,12 +47,9 @@ export function QuillEditor({
           [{ indent: "-1" }, { indent: "+1" }],
           [{ align: [] }],
           ["blockquote", "code-block"],
-          ["link", "attachment"],
+          ["link"],
           ["clean"],
         ],
-        handlers: {
-          attachment: () => attachmentRef!.current!.click(),
-        },
       },
     }),
     []
@@ -101,13 +89,16 @@ export function QuillEditor({
       );
 
       if (!response.ok) {
+        toast.showError(
+          "Failed to upload attachment. Please check your file and try again."
+        );
         throw new Error(`Upload failed (${response.status})`);
       }
 
       const { url } = await response.json();
-      console.log("Uploaded URL:", url);
 
       setAttachments((prev) => [...prev, url]);
+      toast.showSuccess("Attachment uploaded successfully!");
     } catch (error) {
       console.error("Upload error:", error);
     }
@@ -185,13 +176,22 @@ export function QuillEditor({
         ref={quillRef}
       />
 
-      <input
-        type="file"
-        ref={attachmentRef}
-        style={{ display: "none" }}
-        onChange={handleAttachment}
-      />
-
+<div className={styles.attachmentField}>
+    <input
+      id="attachment-input"
+      type="file"
+      ref={attachmentRef}
+      className={styles.attachmentInputHidden}
+      onChange={handleAttachment}
+    />
+    <Button
+      size="sm"
+      onClick={() => attachmentRef.current?.click()}
+      className={styles.attachmentTrigger}
+    >
+      + Add attachment
+    </Button>
+  </div>
       <FilePreviewList
         files={attachments}
         onRemove={(index) => {

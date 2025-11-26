@@ -32,4 +32,30 @@
   gap: 0.5rem;
   flex-direction: row;
   align-items: center;
+  margin-top: 1.5rem;
+}
+
+.attachmentInputHidden {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.attachmentTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  border: 1px dashed #9e91be;
+  background: #faf5ff00;
+  color: #343336;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.attachmentTrigger:hover {
+  background: #bdbdbd2c;
 }

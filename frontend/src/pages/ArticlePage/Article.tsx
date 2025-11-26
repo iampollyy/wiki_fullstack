@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./article.module.scss";
 import { Button } from "@shared/ui/button/Button";
-import { QuillEditor } from "@features/createArticle/QuillEditor";
+import { TextEditor } from "@features/createArticle/TextEditor";
 import { io, Socket } from "socket.io-client";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -103,7 +103,7 @@ export const Article = () => {
     <section className={styles.article__content}>
       {isEditing ? (
         <>
-          <QuillEditor
+          <TextEditor
             mode="edit"
             articleId={id}
             initialData={article}

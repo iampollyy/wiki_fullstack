@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../button/Button";
 import styles from "./header.module.scss";
 import { Link } from "react-router-dom";
-import { QuillEditor } from "@features/createArticle/QuillEditor";
+import { TextEditor } from "@features/createArticle/TextEditor";
 export const Header = () => {
   const [showEditor, setShowEditor] = useState(false);
 
@@ -32,7 +32,7 @@ export const Header = () => {
             >
               ✕
             </Button>
-            <QuillEditor mode="create" />
+            <TextEditor mode="create" />
           </div>
         </div>
       )}
