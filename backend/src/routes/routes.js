@@ -26,27 +26,15 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const {
-    title,
-    birthYear,
-    nationality,
-    occupation,
-    knownFor,
-    content,
-    attachments,
-  } = req.body;
+  const { title, content, attachments } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({ error: "Title and content are required" });
   }
 
   try {
-    const articleId = articleService.createArticle({
+    const articleId = await articleService.createArticle({
       title,
-      birthYear,
-      nationality,
-      occupation,
-      knownFor,
       content,
       attachments,
     });
@@ -59,7 +47,7 @@ router.post("/", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const success = articleService.deleteArticle(req.params.id);
+    const success = await articleService.deleteArticle(req.params.id);
 
     if (!success) {
       return res.status(404).json({ message: "The article not found" });
@@ -79,7 +67,7 @@ router.put("/:id", async (req, res) => {
   const updatedData = req.body;
 
   try {
-    const updatedArticle = articleService.updateArticle(id, updatedData);
+    const updatedArticle = await articleService.updateArticle(id, updatedData);
     res.json(updatedArticle);
   } catch (error) {
     console.error("Error updating article:", error);
