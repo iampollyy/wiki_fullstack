@@ -6,28 +6,34 @@ Detailed guide for the Wiki Fullstack project.
 **https://www.figma.com/design/QMyUMry6eVa5fhLl2Sx9wK/Wikipedia-Redesign-NodeJS-Project?node-id=0-1&p=f&m=dev
 ## Overview
 
-This is a tutorial fullstack project built with Node.js (Express) — a simple wiki/blog system where articles are stored as JSON files on the server. The project separates backend and frontend:
+This is a tutorial fullstack project built with Node.js (Express) — a wiki/blog system where articles are stored in a PostgreSQL database. The project separates backend and frontend:
 
-- `backend/` — an Express server that provides a REST API to retrieve and create articles. Data is stored in the `backend/data/` folder as individual `.json` files.
+- `backend/` — an Express server that provides a REST API to retrieve and create articles. Data is stored in a PostgreSQL database using Sequelize ORM.
 - `frontend/` — the client side built with React + TypeScript, bundled with Vite. A Quill-based editor (`react-quill-new`) is used.
 
-The project is convenient for local development and experimenting with a simple file-based article storage.
+The project uses database migrations for schema management, making it easy to set up the database locally.
 
 ## Technologies
 
-- Backend: Node.js, Express, CORS
+- Backend: Node.js, Express, CORS, PostgreSQL, Sequelize ORM
 - Frontend: React, TypeScript, Vite, React Router, react-quill-new
 - Bundler: Vite
+- Database: PostgreSQL
 
 ## Repository structure (key folders)
 
 - `backend/`
 
-  - `server.js` — server entry point
-  - `app.js` — Express app setup and routes
-  - `routes/routes.js` — API routes (GET/POST for articles)
-  - `services/articleService.js` — simple JSON file operations in `data/`
-  - `data/` — article files: `*.json`
+  - `src/server.js` — server entry point
+  - `src/app.js` — Express app setup and routes
+  - `src/routes/routes.js` — API routes (GET/POST for articles)
+  - `src/services/articleService.js` — article service (currently uses file storage, can be migrated to database)
+  - `src/db/` — database configuration and models
+    - `db.js` — Sequelize connection instance
+    - `models/article.js` — Article model
+    - `migrations/` — database migration files
+    - `config/database.js` — Sequelize CLI configuration
+  - `data/` — article files: `*.json` (legacy file-based storage)
 
 - `frontend/`
   - `src/` — React source files
@@ -35,23 +41,96 @@ The project is convenient for local development and experimenting with a simple 
   - `vite.config.js` — Vite config, path aliases
   - `package.json` — scripts for development and build
 
+## Database Setup
+
+This project uses PostgreSQL as the database. Before running the application, you need to:
+
+### Prerequisites
+
+1. **Install PostgreSQL** (if not already installed):
+   - Download from [PostgreSQL official website](https://www.postgresql.org/download/)
+   - Install and make sure PostgreSQL service is running
+
+2. **Create a database**:
+   ```sql
+   CREATE DATABASE wiki_db;
+   ```
+   Or using psql command line:
+   ```powershell
+   psql -U postgres -c "CREATE DATABASE wiki_db;"
+   ```
+
+### Environment Variables
+
+Create a `.env` file in the `backend/` directory with the following variables:
+
+```env
+# Database Configuration
+DB_NAME=wiki_db
+DB_USER=postgres
+DB_PASS=your_password
+DB_HOST=localhost
+DB_PORT=5432
+
+# Server Configuration
+PORT=5000
+
+# Socket.IO Configuration (optional)
+SOCKET_ORIGIN=*
+SOCKET_PATH=/socket.io
+```
+
+Replace `your_password` with your PostgreSQL password.
+
+### Running Database Migrations
+
+After setting up the database and environment variables, run the migrations to create the required tables:
+
+```powershell
+cd backend
+npm run db:migrate
+```
+
+This will create the `Articles` table with the following columns:
+- `id` (integer, primary key, auto-increment)
+- `title` (string, required)
+- `content` (text, required)
+- `birthYear` (integer, optional)
+- `nationality` (string, optional)
+- `occupation` (string, optional)
+- `knownFor` (text, optional)
+- `attachments` (JSONB, optional, default: [])
+- `createdAt` (timestamp)
+- `updatedAt` (timestamp)
+
+**Migration Commands:**
+- `npm run db:migrate` - Run pending migrations
+- `npm run db:migrate:undo` - Undo the last migration
+- `npm run db:migrate:undo:all` - Undo all migrations
+- `npm run db:migrate:status` - Check migration status
+
 ## Installation and running (local, Windows PowerShell)
 
 Note: the commands below are for Windows PowerShell (`powershell.exe`).
 
-1. Install backend dependencies:
+1. **Install backend dependencies:**
 
 ```powershell
 cd backend
 npm install
 ```
 
-2. Start the backend server:
+2. **Set up the database** (see [Database Setup](#database-setup) section above):
+   - Create PostgreSQL database
+   - Create `.env` file with database credentials
+   - Run migrations: `npm run db:migrate`
+
+3. **Start the backend server:**
 
 ```powershell
 npm start
 # or
-node server.js
+node src/server.js
 ```
 
 By default the server runs on port 5000 and logs: `Server is running on http://localhost:5000`.
@@ -115,10 +194,12 @@ Note: you can use Postman/Insomnia or fetch from the frontend.
 
 ## Data storage
 
-All articles are stored as separate JSON files in `backend/data/`. When creating a new article, `Date.now().toString()` is used as the id (file name `{id}.json`). The service provides:
+Articles are stored in a PostgreSQL database using Sequelize ORM. The database schema is managed through migrations located in `backend/src/db/migrations/`.
 
-- reading all files (sync) and building a list;
-- reading a file by id (sync);
-- writing a new file when creating an article.
+**Key features:**
+- Database migrations for version-controlled schema changes
+- Sequelize ORM for type-safe database operations
+- PostgreSQL with support for JSONB data types
+- Automatic timestamps (createdAt, updatedAt)
 
-Important: this is a simple file-based scheme without transactions/locks; it's suitable for demos and local development but not for production.
+**Note:** The project currently still has a file-based article service in `backend/data/` for backwards compatibility. Consider migrating the article service to use the database model instead of file operations.

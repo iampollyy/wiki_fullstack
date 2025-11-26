@@ -1,71 +1,75 @@
-const fs = require("fs");
-const path = require("path");
-const { notifyRoom, ws } = require("./notificationService");
+const Article = require("../db/models/article");
+const { notifyRoom } = require("./notificationService");
 
-const DATA_FOLDER = path.join(__dirname, "../../data");
-
-if (!fs.existsSync(DATA_FOLDER)) {
-  fs.mkdirSync(DATA_FOLDER);
-}
-
-const getArticles = () => {
-  return fs.readdirSync(DATA_FOLDER).map((file) => {
-    const filePath = path.join(DATA_FOLDER, file);
-    const content = fs.readFileSync(filePath, "utf-8");
-    const data = JSON.parse(content);
-
-    return {
-      id: file.replace(".json", ""),
-      title: data.title,
-      content: data.content,
-    };
+const getArticles = async () => {
+  const articles = await Article.findAll({
+    attributes: ["id", "title", "content", "createdAt", "updatedAt"],
+    order: [["createdAt", "DESC"]],
   });
+  return articles.map((article) => article.toJSON());
 };
 
-const getArticleById = (articleId) => {
-  const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
-  const content = fs.readFileSync(filePath, "utf-8");
-  return JSON.parse(content);
+const getArticleById = async (articleId) => {
+  // Преобразуем ID в число, так как в БД это INTEGER
+  const id = parseInt(articleId, 10);
+  if (isNaN(id)) {
+    throw new Error("Invalid article ID");
+  }
+
+  const article = await Article.findByPk(id);
+  if (!article) {
+    throw new Error("Article not found");
+  }
+  return article.toJSON();
 };
 
-const createArticle = ({ title, content, attachments }) => {
-  const articleId = Date.now().toString();
-  const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
-
-  const articleData = {
-    id: articleId,
+const createArticle = async ({ title, content, attachments }) => {
+  const article = await Article.create({
     title,
     content,
     attachments: attachments || [],
-  };
-
-  fs.writeFileSync(filePath, JSON.stringify(articleData, null, 2));
-  return articleId;
+  });
+  return article.id;
 };
 
-const updateArticle = (articleId, updatedData) => {
-  const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
-  if (!fs.existsSync(filePath)) {
+const updateArticle = async (articleId, updatedData) => {
+  // Преобразуем ID в число, так как в БД это INTEGER
+  const id = parseInt(articleId, 10);
+  if (isNaN(id)) {
+    throw new Error("Invalid article ID");
+  }
+
+  const article = await Article.findByPk(id);
+  if (!article) {
     throw new Error("Article not found");
   }
-  const content = fs.readFileSync(filePath, "utf-8");
-  const article = JSON.parse(content);
-  const newArticle = { ...article, ...updatedData };
-  fs.writeFileSync(filePath, JSON.stringify(newArticle, null, 2));
 
-  notifyRoom(`article_${articleId}`, { type: "notification", article: newArticle, message: "Article has been updated!" });
+  await article.update(updatedData);
+  const updatedArticle = article.toJSON();
 
-  return newArticle;
+  notifyRoom(`article_${articleId}`, {
+    type: "notification",
+    article: updatedArticle,
+    message: "Article has been updated!",
+  });
+
+  return updatedArticle;
 };
 
-const deleteArticle = (articleId) => {
-  const filePath = path.join(DATA_FOLDER, `${articleId}.json`);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-    return true;
+const deleteArticle = async (articleId) => {
+  // Преобразуем ID в число, так как в БД это INTEGER
+  const id = parseInt(articleId, 10);
+  if (isNaN(id)) {
+    return false;
   }
 
-  return false;
+  const article = await Article.findByPk(id);
+  if (!article) {
+    return false;
+  }
+
+  await article.destroy();
+  return true;
 };
 
 module.exports = {
