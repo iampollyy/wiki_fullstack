@@ -1,13 +1,14 @@
 import styles from "./commentForm.module.scss";
 import { useState } from "react";
 import { Button } from "@shared/ui/button/Button";
-import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useToast } from "@shared/ui/toast/ToastContext";
 
 export const CommentForm = () => {
   const [content, setContent] = useState("");
   const [name, setName] = useState("");
   const { id } = useParams();
+  const toast = useToast();
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
@@ -19,11 +20,11 @@ export const CommentForm = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name.trim() || !content.trim()) {
-      alert("Name and comment are required");
+      toast.showError("Name and comment are required");
       return;
     }
     if (!id) {
-      alert("Article ID not found in URL");
+      toast.showWarning("Article ID not found in URL");
       return;
     }
     fetch(`http://localhost:5000/comments/article/${id}`, {
@@ -33,9 +34,11 @@ export const CommentForm = () => {
       },
       body: JSON.stringify({ author: name, content }),
     })
+      
       .then((response) => response.json())
       .then(() => setContent(""))
       .then(() => setName(""))
+      .then(() => toast.showSuccess("Comment added successfully!"))
       .catch((error) => console.error("Failed to create comment:", error));
   };
 
