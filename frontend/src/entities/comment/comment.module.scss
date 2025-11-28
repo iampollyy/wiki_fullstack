@@ -7,7 +7,17 @@
   &__header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+  }
+  &__info{
+     display: flex;
+    align-items: center;
     gap: 1rem;
+  }
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
   }
 
   &__author {
