@@ -5,7 +5,6 @@ const sequelize = require("./db/db");
 const http = require("http");
 const app = require("./app");
 
-// Импортируем модели, чтобы они инициализировались
 require("./db/models/article");
 
 async function start() {

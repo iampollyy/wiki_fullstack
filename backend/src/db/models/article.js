@@ -32,4 +32,11 @@ Article.init(
   }
 );
 
+Article.associate = function (models) {
+  Article.hasMany(models.Comment, {
+    foreignKey: "articleId",
+    as: "comments",
+  });
+};
+
 module.exports = Article;

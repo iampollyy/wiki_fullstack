@@ -10,7 +10,6 @@ const getArticles = async () => {
 };
 
 const getArticleById = async (articleId) => {
-  // Преобразуем ID в число, так как в БД это INTEGER
   const id = parseInt(articleId, 10);
   if (isNaN(id)) {
     throw new Error("Invalid article ID");
@@ -33,7 +32,6 @@ const createArticle = async ({ title, content, attachments }) => {
 };
 
 const updateArticle = async (articleId, updatedData) => {
-  // Преобразуем ID в число, так как в БД это INTEGER
   const id = parseInt(articleId, 10);
   if (isNaN(id)) {
     throw new Error("Invalid article ID");
@@ -57,7 +55,6 @@ const updateArticle = async (articleId, updatedData) => {
 };
 
 const deleteArticle = async (articleId) => {
-  // Преобразуем ID в число, так как в БД это INTEGER
   const id = parseInt(articleId, 10);
   if (isNaN(id)) {
     return false;
