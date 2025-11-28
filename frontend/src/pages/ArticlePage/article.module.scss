@@ -13,13 +13,49 @@
   
   &__actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     gap: 2rem;
     border-top: 1px solid #969696;
     border-bottom: 1px solid #969696;
     width: 100%;
     padding: 0.5rem 0.8rem;
+  }
+
+  &__actionsLeft {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__actionsRight {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  &__discussionLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1rem 0.5rem;
+    font-size: 1rem;
+    background-color: transparent;
+    color: var(--primary-color);
+    text-decoration: none;
+    border-radius: 3.37rem;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: var(--hover-color-secondary);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 0.1875rem #ffffff, 0 0 0 0.375rem var(--primary-color);
+    }
   }
 
   &__subtitle {

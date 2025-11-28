@@ -1,6 +1,6 @@
 import { IArticle } from "@shared/ui/articleCard/model/TArticle";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styles from "./article.module.scss";
 import { Button } from "@shared/ui/button/Button";
 import { TextEditor } from "@features/createArticle/TextEditor";
@@ -117,12 +117,22 @@ export const Article = () => {
           <h1 className={styles.article__title}>{article.title}</h1>
 
           <div className={styles.article__actions}>
-            <Button variant="tertiary" onClick={handleEdit}>
-              Edit
-            </Button>
-            <Button variant="tertiary" onClick={handleDelete}>
-              Delete
-            </Button>
+            <div className={styles.article__actionsLeft}>
+              <Link
+                to={`/articles/${article.id}/discussion`}
+                className={styles.article__discussionLink}
+              >
+                Discussion
+              </Link>
+            </div>
+            <div className={styles.article__actionsRight}>
+              <Button variant="tertiary" onClick={handleEdit}>
+                Edit
+              </Button>
+              <Button variant="tertiary" onClick={handleDelete}>
+                Delete
+              </Button>
+            </div>
           </div>
           <FilePreviewList
             files={article.attachments || []}

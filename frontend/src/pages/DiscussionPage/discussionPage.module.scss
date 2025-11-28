@@ -1,0 +1,23 @@
+.discussionPage {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 auto;
+    color: #111827;
+  }
+
+  &__wrapper {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #f9fafb;
+    border-radius: 8px;
+  }
+
+}
