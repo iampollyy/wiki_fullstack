@@ -72,7 +72,7 @@ router.put("/:id", async (req, res) => {
   if (!id || isNaN(Number(id))) {
     return res.status(400).json({ error: "Invalid comment ID" });
   }
-  if (updatedData.content !== undefined && !updatedData.content) {
+  if (updatedData.content !== undefined && !updatedData.content.trim()) {
     return res.status(400).json({ error: "Content cannot be empty" });
   }
   try {

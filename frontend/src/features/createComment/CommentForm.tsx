@@ -4,7 +4,11 @@ import { Button } from "@shared/ui/button/Button";
 import { useParams } from "react-router-dom";
 import { useToast } from "@shared/ui/toast/ToastContext";
 
-export const CommentForm = () => {
+interface CommentFormProps {
+  onCommentAdded?: () => void;
+}
+
+export const CommentForm = ({ onCommentAdded }: CommentFormProps) => {
   const [content, setContent] = useState("");
   const [name, setName] = useState("");
   const { id } = useParams();
@@ -36,9 +40,14 @@ export const CommentForm = () => {
     })
       
       .then((response) => response.json())
-      .then(() => setContent(""))
-      .then(() => setName(""))
-      .then(() => toast.showSuccess("Comment added successfully!"))
+      .then(() => {
+        setContent("");
+        setName("");
+        toast.showSuccess("Comment added successfully!");
+        if (onCommentAdded) {
+          onCommentAdded();
+        }
+      })
       .catch((error) => console.error("Failed to create comment:", error));
   };
 

@@ -57,10 +57,11 @@ const updateComment = async (commentId, updatedData) => {
 
   const comment = await Comment.findByPk(id);
   if (!comment) {
-    return false;
+    return null;
   }
   await comment.update(updatedData);
-  return true;
+  const updatedComment = await Comment.findByPk(id);
+  return updatedComment ? updatedComment.toJSON() : null;
 };
   
 

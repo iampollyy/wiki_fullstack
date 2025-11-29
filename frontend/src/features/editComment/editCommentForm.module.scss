@@ -1,0 +1,15 @@
+.buttonGroup {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.textarea_edit {
+  width: 100%;
+  min-height: 6.25rem;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
