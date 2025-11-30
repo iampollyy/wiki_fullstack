@@ -1,9 +1,28 @@
 const Article = require("../db/models/article");
+const Workspace = require("../db/models/workspace");
 const { notifyRoom } = require("./notificationService");
 
-const getArticles = async () => {
+const getArticles = async (workspaceId = null) => {
+  const where = workspaceId ? { workspaceId } : {};
   const articles = await Article.findAll({
-    attributes: ["id", "title", "content", "createdAt", "updatedAt"],
+    where,
+    attributes: [
+      "id",
+      "title",
+      "content",
+      "workspaceId",
+      "attachments",
+      "createdAt",
+      "updatedAt",
+    ],
+    include: [
+      {
+        model: Workspace,
+        as: "workspace",
+        attributes: ["id", "name", "slug"],
+        required: false,
+      },
+    ],
     order: [["createdAt", "DESC"]],
   });
   return articles.map((article) => article.toJSON());
@@ -15,18 +34,51 @@ const getArticleById = async (articleId) => {
     throw new Error("Invalid article ID");
   }
 
-  const article = await Article.findByPk(id);
+  const article = await Article.findByPk(id, {
+    include: [
+      {
+        model: Workspace,
+        as: "workspace",
+        attributes: ["id", "name", "slug"],
+      },
+    ],
+  });
   if (!article) {
     throw new Error("Article not found");
   }
   return article.toJSON();
 };
 
-const createArticle = async ({ title, content, attachments }) => {
+const createArticle = async ({
+  title,
+  content,
+  attachments,
+  workspaceId,
+  workspaceSlug,
+  workspaceName,
+}) => {
+  let finalWorkspaceId = workspaceId || null;
+
+  if (workspaceSlug && !workspaceId) {
+    let workspace = await Workspace.findOne({
+      where: { slug: workspaceSlug },
+    });
+
+    if (!workspace) {
+      workspace = await Workspace.create({
+        name: workspaceName || workspaceSlug, 
+        slug: workspaceSlug,
+      });
+    }
+
+    finalWorkspaceId = workspace.id;
+  }
+
   const article = await Article.create({
     title,
     content,
     attachments: attachments || [],
+    workspaceId: finalWorkspaceId,
   });
   return article.id;
 };
@@ -42,7 +94,25 @@ const updateArticle = async (articleId, updatedData) => {
     throw new Error("Article not found");
   }
 
-  await article.update(updatedData);
+  const { workspaceSlug, workspaceName, ...restData } = updatedData;
+  let finalData = { ...restData };
+
+  if (workspaceSlug) {
+    let workspace = await Workspace.findOne({
+      where: { slug: workspaceSlug },
+    });
+
+    if (!workspace) {
+      workspace = await Workspace.create({
+        name: workspaceName || workspaceSlug,
+        slug: workspaceSlug,
+      });
+    }
+
+    finalData.workspaceId = workspace.id;
+  }
+
+  await article.update(finalData);
   const updatedArticle = article.toJSON();
 
   notifyRoom(`article_${articleId}`, {

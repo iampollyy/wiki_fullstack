@@ -26,7 +26,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { title, content, attachments } = req.body;
+  const { title, content, attachments, workspaceSlug } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({ error: "Title and content are required" });
@@ -37,6 +37,7 @@ router.post("/", async (req, res) => {
       title,
       content,
       attachments,
+      workspaceSlug,
     });
     res.status(201).json({ id: articleId, message: "Article created" });
   } catch (err) {
@@ -80,13 +81,20 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.post("/upload-attachment", upload.single("attachment"), (req, res) => {
+router.post("/:id/upload-attachment", upload.single("attachment"), async (req, res) => {
+  const articleId = req.params.id;
+  
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
     const fileUrl = `/uploads/${req.file.filename}`;
+    
+    const article = await articleService.getArticleById(articleId);
+    const attachments = article.attachments || [];
+    attachments.push({ url: fileUrl, name: req.file.originalname });
+    await articleService.updateArticle(articleId, { attachments });
 
     res.json({ url: fileUrl });
   } catch (err) {

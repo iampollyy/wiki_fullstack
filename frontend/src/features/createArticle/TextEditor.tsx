@@ -1,7 +1,7 @@
 import { Button } from "@shared/ui/button/Button";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { useToast } from "@shared/ui/toast/ToastContext";
-import {useMemo, useRef, useState } from "react";
+import {useMemo, useRef, useState, useEffect } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import styles from "./textEditor.module.scss";
@@ -27,6 +27,9 @@ export function TextEditor({
 }: TextEditorProps) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
+  const [workspaceSlug, setWorkspaceSlug] = useState(
+    initialData?.workspace?.slug ?? ""
+  );
   const [attachments, setAttachments] = useState<string[]>(
     initialData?.attachments ?? []
   );
@@ -34,6 +37,7 @@ export function TextEditor({
   const toast = useToast();
   const quillRef = useRef<any>(null);
   const attachmentRef = useRef<HTMLInputElement | null>(null);
+
 
   const modules = useMemo(
     () => ({
@@ -116,6 +120,7 @@ export function TextEditor({
       title,
       content,
       attachments: attachments,
+      workspaceSlug: workspaceSlug || null,
     };
 
     const isEdit = mode === "edit" && articleId;
@@ -143,6 +148,7 @@ export function TextEditor({
       if (mode === "create") {
         setTitle("");
         setContent("");
+        setWorkspaceSlug("");
         setAttachments([]);
         toast.showSuccess("Article created successfully!");
       } else {
@@ -164,6 +170,13 @@ export function TextEditor({
         placeholder="Article Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        className="w-full border rounded p-2 mb-3"
+      />
+      <input
+        type="text"
+        placeholder="Slug"
+        value={workspaceSlug}
+        onChange={(e) => setWorkspaceSlug(e.target.value)}
         className="w-full border rounded p-2 mb-3"
       />
       <ReactQuill

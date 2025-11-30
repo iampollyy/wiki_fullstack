@@ -23,6 +23,14 @@ Article.init(
       allowNull: true,
       defaultValue: [],
     },
+    workspaceId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "Workspaces",
+        key: "id",
+      },
+    },
   },
   {
     sequelize,
@@ -36,6 +44,10 @@ Article.associate = function (models) {
   Article.hasMany(models.Comment, {
     foreignKey: "articleId",
     as: "comments",
+  });
+  Article.belongsTo(models.Workspace, {
+    foreignKey: "workspaceId",
+    as: "workspace",
   });
 };
 

@@ -43,4 +43,3 @@ Comment.associate = function (models) {
 };
 
 module.exports = Comment;
-
