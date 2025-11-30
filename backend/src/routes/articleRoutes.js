@@ -81,20 +81,13 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.post("/:id/upload-attachment", upload.single("attachment"), async (req, res) => {
-  const articleId = req.params.id;
-  
+router.post("/upload-attachment", upload.single("attachment"), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
     const fileUrl = `/uploads/${req.file.filename}`;
-    
-    const article = await articleService.getArticleById(articleId);
-    const attachments = article.attachments || [];
-    attachments.push({ url: fileUrl, name: req.file.originalname });
-    await articleService.updateArticle(articleId, { attachments });
 
     res.json({ url: fileUrl });
   } catch (err) {

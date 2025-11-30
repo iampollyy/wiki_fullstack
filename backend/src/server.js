@@ -28,7 +28,7 @@ async function start() {
 
     const server = http.createServer(app);
     const io = initSocket(server);
-    
+
     io.on("connection", registerSocketEvents);
 
     server.listen(process.env.PORT || 5000, () => {
