@@ -6,15 +6,17 @@ import { IWorkSpace } from "@entities/workspace/model/workspage";
 import { useEffect, useState } from "react";
 
 export const Home = () => {
-    const [workspace, setWorkspace] = useState<IWorkSpace[]>([]);
-    useEffect(() => {
-      fetch("http://localhost:5000/workspaces")
-        .then((response) => response.json())
-        .then((data) => {
-          setWorkspace(data);
-        })
-        .catch((error) => console.error("Failed to load workspaces:", error));
-    }, []);
+  const [workspaces, setWorkspaces] = useState<IWorkSpace[]>([]);
+  useEffect(() => {
+    fetch("http://localhost:5000/workspaces")
+      .then((response) => response.json())
+      .then((data) => {
+        // Убедимся, что data - это массив
+        const workspacesArray = Array.isArray(data) ? data : [];
+        setWorkspaces(workspacesArray);
+      })
+      .catch((error) => console.error("Failed to load workspaces:", error));
+  }, []);
   const navigate = useNavigate();
   function onGoToArticlesClick() {
     navigate("/articles");
@@ -41,7 +43,7 @@ export const Home = () => {
       </section>
 
       <section className={styles.home__workspaces}>
-        <WorkSpaceList workspaces={workspace} />
+        <WorkSpaceList workspaces={workspaces} />
       </section>
     </>
   );

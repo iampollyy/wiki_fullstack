@@ -1,10 +1,18 @@
 import { IWorkSpace } from "./model/workspage";
 import styles from "./workSpace.module.scss";
 
-export const Workspace = ({ workspace }: { workspace: IWorkSpace }) => {
+export const Workspace = ({
+  workspace,
+  navigate,
+}: {
+  workspace: IWorkSpace;
+  navigate?: () => void;
+}) => {
   return (
     <>
-      <div className={styles.workspace}>{workspace.name}</div>
+      <div className={styles.workspace} onClick={navigate}>
+        {workspace.name}
+      </div>
     </>
   );
 };

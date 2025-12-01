@@ -1,48 +1,71 @@
-const Workspace = require("../db/models/workspace");
 const Article = require("../db/models/article");
+const Workspace = require("../db/models/workspace");
 
-const getWorkspaces = async () => {
-  const workspaces = await Workspace.findAll({
-    attributes: ["id", "name", "slug", "createdAt", "updatedAt"],
-    order: [["createdAt", "DESC"]],
-  });
-  return workspaces.map((workspace) => workspace.toJSON());
-};
-
-const getWorkspaceBySlug = async (slug) => {
-  const workspace = await Workspace.findOne({
-    where: { slug },
-    include: [
-      {
-        model: Article,
-        as: "articles",
-        attributes: ["id", "title", "content", "createdAt", "updatedAt"],
-        order: [["createdAt", "DESC"]],
-      },
-    ],
-  });
-  if (!workspace) {
-    throw new Error("Workspace not found");
+async function getWorkspaces() {
+  try {
+    const workspaces = await Workspace.findAll({
+      attributes: ["id", "name", "slug", "createdAt", "updatedAt"],
+    });
+    return workspaces.map((workspace) => workspace.toJSON());
+  } catch (err) {
+    console.error("Error in getWorkspaces:", err);
+    throw err;
   }
-  return workspace.toJSON();
-};
+}
 
-const createWorkspace = async ({ name, slug }) => {
-  if (!name || !slug) {
-    throw new Error("Name and slug are required");
+async function getWorkspaceBySlug(slug) {
+  try {
+    const workspace = await Workspace.findOne({
+      where: { slug },
+      include: [
+        {
+          model: Article,
+          as: "articles",
+          attributes: [
+            "id",
+            "title",
+            "content",
+            "workspaceId",
+            "attachments",
+            "createdAt",
+            "updatedAt",
+          ],
+        },
+      ],
+    });
+
+    if (!workspace) {
+      throw new Error("Workspace not found");
+    }
+
+    return workspace.toJSON();
+  } catch (err) {
+    console.error("Error in getWorkspaceBySlug:", err);
+    throw err;
   }
+}
 
-  const existingWorkspace = await Workspace.findOne({ where: { slug } });
-  if (existingWorkspace) {
-    throw new Error("Workspace with this slug already exists");
+async function createWorkspace(workspace) {
+  const { name, slug } = workspace;
+
+  try {
+    const existingWorkspace = await Workspace.findOne({ where: { slug } });
+
+    if (existingWorkspace) {
+      throw new Error("Workspace with this slug already exists");
+    }
+
+    const newWorkspace = await Workspace.create({
+      name,
+      slug,
+    });
+
+    return newWorkspace.id;
+  } catch (err) {
+    console.error("Error in createWorkspace:", err);
+    throw err;
   }
-
-  const workspace = await Workspace.create({
-    name,
-    slug,
-  });
-  return workspace.id;
-};
+}
 
 module.exports = {
   getWorkspaces,

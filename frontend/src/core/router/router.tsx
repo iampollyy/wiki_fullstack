@@ -1,24 +1,29 @@
-import { IRoute } from "./model/IRoute"
-import {Home} from "@pages/HomePage/Home"
-import {Articles} from "@pages/ArticlesPage/Articles"
-import {Article} from "@pages/ArticlePage/Article"
-import { DiscussionPage } from "@pages/DiscussionPage/DiscussionPage"
+import { IRoute } from "./model/IRoute";
+import { Home } from "@pages/HomePage/Home";
+import { Articles } from "@pages/ArticlesPage/Articles";
+import { Article } from "@pages/ArticlePage/Article";
+import { DiscussionPage } from "@pages/DiscussionPage/DiscussionPage";
+import { WorkspacePage } from "@pages/WorkspacePage/WorkspacePage";
 
 export const RoutesConfig: IRoute[] = [
   {
-    path: '/',
-    element: <Home/>,
+    path: "/",
+    element: <Home />,
   },
   {
-    path: '/articles',
-    element: <Articles/>,
+    path: "/articles",
+    element: <Articles />,
   },
   {
-    path: '/articles/:id',
-    element: <Article/>,
+    path: "/articles/:id",
+    element: <Article />,
   },
   {
-    path: '/articles/:id/discussion',
-    element: <DiscussionPage/>,
+    path: "/articles/:id/discussion",
+    element: <DiscussionPage />,
   },
-]
+  {
+    path: "/workspace/:slug",
+    element: <WorkspacePage />,
+  },
+];
