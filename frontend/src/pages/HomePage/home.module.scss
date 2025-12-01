@@ -1,3 +1,11 @@
+.home{
+  background-image: url("/src/assets/images/wiki_globe.svg");
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 20%;
+  background-attachment: fixed;
+  position: relative;
+}
 .home__page {
   display: flex;
   flex-direction: column;
@@ -5,6 +13,7 @@
   justify-content: center;
   padding: 1.25rem;
   height: 70dvh;
+
 }
 
 .home__images {
@@ -27,5 +36,5 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  padding:0 5rem;
+  padding: 0 5rem;
 }

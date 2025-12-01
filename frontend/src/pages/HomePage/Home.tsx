@@ -11,7 +11,6 @@ export const Home = () => {
     fetch("http://localhost:5000/workspaces")
       .then((response) => response.json())
       .then((data) => {
-        // Убедимся, что data - это массив
         const workspacesArray = Array.isArray(data) ? data : [];
         setWorkspaces(workspacesArray);
       })
@@ -23,7 +22,7 @@ export const Home = () => {
   }
 
   return (
-    <>
+    <section className={styles.home}>
       <h1 className="sr-only">Home Page</h1>
 
       <section className={styles.home__page}>
@@ -45,6 +44,6 @@ export const Home = () => {
       <section className={styles.home__workspaces}>
         <WorkSpaceList workspaces={workspaces} />
       </section>
-    </>
+    </section>
   );
 };
