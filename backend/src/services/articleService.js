@@ -1,6 +1,9 @@
 const Article = require("../db/models/article");
 const Workspace = require("../db/models/workspace");
 const { notifyRoom } = require("./notificationService");
+const ArticleVersion = require("../db/models/articleVersion");
+const { version } = require("react");
+
 
 const getArticles = async (workspaceId = null) => {
   const where = workspaceId ? { workspaceId } : {};
@@ -66,7 +69,7 @@ const createArticle = async ({
 
     if (!workspace) {
       workspace = await Workspace.create({
-        name: workspaceName || workspaceSlug, 
+        name: workspaceName || workspaceSlug,
         slug: workspaceSlug,
       });
     }
@@ -80,6 +83,16 @@ const createArticle = async ({
     attachments: attachments || [],
     workspaceId: finalWorkspaceId,
   });
+
+  await ArticleVersion.create({
+    articleId: article.id,
+    title,
+    content,
+    attachments: attachments || [],
+    workspaceId: finalWorkspaceId,
+    versionNumber: 1,
+  });
+
   return article.id;
 };
 
@@ -109,19 +122,37 @@ const updateArticle = async (articleId, updatedData) => {
       });
     }
 
+    const lastVersion = await ArticleVersion.findOne({
+      where: { articleId },
+      order: [['versionNumber', 'DESC']],
+    })
+
+    const nextVersion = lastVersion ? lastVersion.versionNumber + 1 : 1;
+
+    const newVersion = await ArticleVersion.create({
+      articleId,
+      title: finalData.title || article.title,
+      content: finalData.content || article.content,
+      attachments: finalData.attachments || article.attachments,
+      workspaceId: workspace.id,
+      versionNumber: nextVersion,
+    });
+
     finalData.workspaceId = workspace.id;
   }
 
-  await article.update(finalData);
-  const updatedArticle = article.toJSON();
+ // await article.update(finalData);
+  //const updatedArticle = article.toJSON();
 
   notifyRoom(`article_${articleId}`, {
     type: "notification",
-    article: updatedArticle,
+    //article: updatedArticle,
+    version: newVersion.toJSON(),
     message: "Article has been updated!",
   });
 
-  return updatedArticle;
+  // return updatedArticle;
+  return newVersion.toJSON();
 };
 
 const deleteArticle = async (articleId) => {

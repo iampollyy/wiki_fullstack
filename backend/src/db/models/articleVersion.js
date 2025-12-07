@@ -1,28 +1,47 @@
-const { Model, DataTypes } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db");
 
-class Article extends Model {}
+class ArticleVersion extends Model {}
 
-Article.init(
+ArticleVersion.init(
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
+
+    articleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Articles",
+        key: "id",
+      },
+      onDelete: "CASCADE",
+    },
+
+    versionNumber: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+
     title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+
     content: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
+
     attachments: {
       type: DataTypes.JSONB,
       allowNull: true,
       defaultValue: [],
     },
+
     workspaceId: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -34,26 +53,22 @@ Article.init(
   },
   {
     sequelize,
-    modelName: "Article",
-    tableName: "Articles",
+    modelName: "ArticleVersion",
+    tableName: "ArticleVersions",
     timestamps: true,
   }
 );
 
-Article.associate = function (models) {
-  Article.hasMany(models.Comment, {
+ArticleVersion.associate = function (models) {
+  ArticleVersion.belongsTo(models.Article, {
     foreignKey: "articleId",
-    as: "comments",
+    as: "article",
   });
-  Article.belongsTo(models.Workspace, {
+
+  ArticleVersion.belongsTo(models.Workspace, {
     foreignKey: "workspaceId",
     as: "workspace",
   });
-  Article.hasMany(models.ArticleVersion, {
-    foreignKey: "articleId",
-    as: "versions",
-  });
-
 };
 
-module.exports = Article;
+module.exports = ArticleVersion;
