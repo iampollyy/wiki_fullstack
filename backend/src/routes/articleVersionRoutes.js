@@ -4,17 +4,21 @@ const articleVersionService = require("../services/articleVersionService");
 
 router.get("/:articleId/versions/:versionNumber", async (req, res) => {
   const articleId = req.params.articleId;
-  const versionNumber = req.params.versionNumber;
-  if (!articleId || !versionNumber) {
+  const versionNumber = parseInt(req.params.versionNumber, 10);
+
+  if (!articleId || isNaN(versionNumber)) {
     return res
-      .status(404)
-      .json({ error: "No such Article ID or version number" });
+      .status(400)
+      .json({ error: "Invalid Article ID or version number" });
   }
   try {
     const version = await articleVersionService.getArticleVersion(
       articleId,
       versionNumber
     );
+    if (!version) {
+      return res.status(404).json({ error: "Version not found" });
+    }
     res.status(200).json(version);
   } catch (err) {
     console.error("Error fetching article version:", err);
@@ -23,9 +27,9 @@ router.get("/:articleId/versions/:versionNumber", async (req, res) => {
 });
 
 router.get("/:articleId/versions", async (req, res) => {
-  const articleId = req.params.articleId;
-  if (!articleId) {
-    return res.status(404).json({ error: "No such Article ID" });
+  const articleId = parseInt(req.params.articleId, 10);
+  if (!articleId || isNaN(articleId)) {
+    return res.status(400).json({ error: "Invalid Article ID" });
   }
   try {
     const versions = await articleVersionService.getArticleVersions(articleId);
