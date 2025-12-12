@@ -1,6 +1,7 @@
 import { IArticleVersion } from "./model/IArticleVersion";
 import styles from "./versionList.module.scss";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export const VersionList = ({ articleId }: { articleId: string | number }) => {
   const [versions, setVersions] = useState<IArticleVersion[]>([]);
@@ -64,6 +65,10 @@ export const VersionList = ({ articleId }: { articleId: string | number }) => {
     <ul className={styles.versionList}>
       {versions.map((version: IArticleVersion) => (
         <li key={version.id} className={styles.versionItem}>
+          <Link
+            to={`/articles/${articleId}/versions/version-${version.id}`}
+            className={styles.fullLink}
+          />
           <div className={styles.versionContent}>
             <span className={styles.versionNumber}>
               Version {version.versionNumber}
@@ -72,6 +77,7 @@ export const VersionList = ({ articleId }: { articleId: string | number }) => {
               {formatDate(version.createdAt)}
             </span>
           </div>
+
           {version.title && (
             <div className={styles.versionTitle}>{version.title}</div>
           )}
