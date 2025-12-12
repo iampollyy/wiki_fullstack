@@ -66,7 +66,7 @@ export const VersionList = ({ articleId }: { articleId: string | number }) => {
       {versions.map((version: IArticleVersion) => (
         <li key={version.id} className={styles.versionItem}>
           <Link
-            to={`/articles/${articleId}/versions/version-${version.id}`}
+            to={`/articles/${articleId}/versions/id/${version.id}`}
             className={styles.fullLink}
           />
           <div className={styles.versionContent}>

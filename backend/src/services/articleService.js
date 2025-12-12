@@ -108,7 +108,6 @@ const updateArticle = async (articleId, updatedData) => {
   const { workspaceSlug, workspaceName, ...restData } = updatedData;
   let finalData = { ...restData };
 
-  // Обработать workspace если передан
   if (workspaceSlug) {
     let workspace = await Workspace.findOne({
       where: { slug: workspaceSlug },
@@ -124,9 +123,16 @@ const updateArticle = async (articleId, updatedData) => {
     finalData.workspaceId = workspace.id;
   }
 
-  // Создать новую версию если изменены title или content
+  const hasChanges =
+    (finalData.title !== undefined && finalData.title !== article.title) ||
+    (finalData.content !== undefined && finalData.content !== article.content) ||
+    (finalData.attachments !== undefined &&
+      JSON.stringify(finalData.attachments) !== JSON.stringify(article.attachments)) ||
+    (finalData.workspaceId !== undefined &&
+      finalData.workspaceId !== article.workspaceId);
+
   let newVersion = null;
-  if (finalData.title || finalData.content) {
+  if (hasChanges) {
     const lastVersion = await ArticleVersion.findOne({
       where: { articleId },
       order: [["versionNumber", "DESC"]],
@@ -136,15 +142,21 @@ const updateArticle = async (articleId, updatedData) => {
 
     newVersion = await ArticleVersion.create({
       articleId,
-      title: finalData.title || article.title,
-      content: finalData.content || article.content,
-      attachments: finalData.attachments || article.attachments,
-      workspaceId: finalData.workspaceId || article.workspaceId,
+      title: finalData.title !== undefined ? finalData.title : article.title,
+      content:
+        finalData.content !== undefined ? finalData.content : article.content,
+      attachments:
+        finalData.attachments !== undefined
+          ? finalData.attachments
+          : article.attachments,
+      workspaceId:
+        finalData.workspaceId !== undefined
+          ? finalData.workspaceId
+          : article.workspaceId,
       versionNumber: nextVersion,
     });
   }
 
-  // Обновить саму статью
   await article.update(finalData);
   const updatedArticle = article.toJSON();
 

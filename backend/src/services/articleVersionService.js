@@ -15,7 +15,15 @@ const getArticleVersion = async (articleId, versionNumber) => {
   return version ? version.toJSON() : null;
 };
 
+const getArticleVersionById = async (articleId, versionId) => {
+  const version = await ArticleVersion.findOne({
+    where: { articleId, id: versionId },
+  });
+  return version ? version.toJSON() : null;
+};
+
 module.exports = {
   getArticleVersions,
   getArticleVersion,
+  getArticleVersionById,
 };
