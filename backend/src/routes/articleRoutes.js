@@ -26,7 +26,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { title, content, attachments } = req.body;
+  const { title, content, attachments, workspaceSlug } = req.body;
 
   if (!title || !content) {
     return res.status(400).json({ error: "Title and content are required" });
@@ -37,6 +37,7 @@ router.post("/", async (req, res) => {
       title,
       content,
       attachments,
+      workspaceSlug,
     });
     res.status(201).json({ id: articleId, message: "Article created" });
   } catch (err) {

@@ -1,15 +1,28 @@
 import { Button } from "@shared/ui/button/Button";
 import styles from "./home.module.scss";
 import { useNavigate } from "react-router-dom";
+import { WorkSpaceList } from "@shared/ui/workSpaceList/WorkSpaceList";
+import { IWorkSpace } from "@entities/workspace/model/workspage";
+import { useEffect, useState } from "react";
 
 export const Home = () => {
+  const [workspaces, setWorkspaces] = useState<IWorkSpace[]>([]);
+  useEffect(() => {
+    fetch("http://localhost:5000/workspaces")
+      .then((response) => response.json())
+      .then((data) => {
+        const workspacesArray = Array.isArray(data) ? data : [];
+        setWorkspaces(workspacesArray);
+      })
+      .catch((error) => console.error("Failed to load workspaces:", error));
+  }, []);
   const navigate = useNavigate();
   function onGoToArticlesClick() {
     navigate("/articles");
   }
 
   return (
-    <>
+    <section className={styles.home}>
       <h1 className="sr-only">Home Page</h1>
 
       <section className={styles.home__page}>
@@ -27,6 +40,10 @@ export const Home = () => {
           <span className="material-symbols-outlined">trending_flat</span>
         </Button>
       </section>
-    </>
+
+      <section className={styles.home__workspaces}>
+        <WorkSpaceList workspaces={workspaces} />
+      </section>
+    </section>
   );
 };

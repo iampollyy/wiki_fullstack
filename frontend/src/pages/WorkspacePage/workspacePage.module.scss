@@ -1,0 +1,30 @@
+.workspacePage {
+  display: grid;
+  column-gap: 0.875rem;
+  row-gap: 0.875rem;
+  grid-template-columns: repeat(auto-fill, minmax(25rem, 25rem));
+  margin-top: 3.125rem;
+  justify-content: space-around;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__emptyList {
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-align: center;
+  }
+}
+
+.workspaceTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  margin-left: 4rem;
+}

@@ -4,9 +4,19 @@ dotenv.config();
 const sequelize = require("./db/db");
 const http = require("http");
 const app = require("./app");
+const { initSocket } = require("./config/socket");
+const { registerSocketEvents } = require("./services/notificationService");
 
-// Импортируем модели, чтобы они инициализировались
-require("./db/models/article");
+const Article = require("./db/models/article");
+const Comment = require("./db/models/comment");
+const Workspace = require("./db/models/workspace");
+
+const models = { Article, Comment, Workspace };
+Object.keys(models).forEach((modelName) => {
+  if (models[modelName].associate) {
+    models[modelName].associate(models);
+  }
+});
 
 async function start() {
   try {
@@ -17,7 +27,13 @@ async function start() {
     console.log("Tables synchronized");
 
     const server = http.createServer(app);
-    server.listen(process.env.PORT || 5000);
+    const io = initSocket(server);
+
+    io.on("connection", registerSocketEvents);
+
+    server.listen(process.env.PORT || 5000, () => {
+      console.log(`Server running on port ${process.env.PORT || 5000}`);
+    });
   } catch (err) {
     console.error(err);
   }

@@ -29,6 +29,6 @@
       "@shared/*": ["shared/*"]
     }
   },
-  "include": ["src", "env.d.ts"],
+  "include": ["src", "env.d.ts", "src/entities/comment"],
   "exclude": ["node_modules", "dist"]
 }
