@@ -7,6 +7,7 @@ import { TextEditor } from "@features/createArticle/TextEditor";
 import { io, Socket } from "socket.io-client";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { VersionSubmenu } from "@shared/ui/versionSubmenu/versionSubmenu";
 
 export const Article = () => {
   const { id } = useParams();
@@ -124,6 +125,8 @@ export const Article = () => {
               >
                 Discussion
               </Link>
+
+              <VersionSubmenu articleId={article.id} />
             </div>
             <div className={styles.article__actionsRight}>
               <Button variant="tertiary" onClick={handleEdit}>

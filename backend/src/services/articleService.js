@@ -1,6 +1,7 @@
 const Article = require("../db/models/article");
 const Workspace = require("../db/models/workspace");
 const { notifyRoom } = require("./notificationService");
+const ArticleVersion = require("../db/models/articleVersion");
 
 const getArticles = async (workspaceId = null) => {
   const where = workspaceId ? { workspaceId } : {};
@@ -66,7 +67,7 @@ const createArticle = async ({
 
     if (!workspace) {
       workspace = await Workspace.create({
-        name: workspaceName || workspaceSlug, 
+        name: workspaceName || workspaceSlug,
         slug: workspaceSlug,
       });
     }
@@ -80,6 +81,16 @@ const createArticle = async ({
     attachments: attachments || [],
     workspaceId: finalWorkspaceId,
   });
+
+  await ArticleVersion.create({
+    articleId: article.id,
+    title,
+    content,
+    attachments: attachments || [],
+    workspaceId: finalWorkspaceId,
+    versionNumber: 1,
+  });
+
   return article.id;
 };
 
@@ -112,16 +123,51 @@ const updateArticle = async (articleId, updatedData) => {
     finalData.workspaceId = workspace.id;
   }
 
+  const hasChanges =
+    (finalData.title !== undefined && finalData.title !== article.title) ||
+    (finalData.content !== undefined && finalData.content !== article.content) ||
+    (finalData.attachments !== undefined &&
+      JSON.stringify(finalData.attachments) !== JSON.stringify(article.attachments)) ||
+    (finalData.workspaceId !== undefined &&
+      finalData.workspaceId !== article.workspaceId);
+
+  let newVersion = null;
+  if (hasChanges) {
+    const lastVersion = await ArticleVersion.findOne({
+      where: { articleId },
+      order: [["versionNumber", "DESC"]],
+    });
+
+    const nextVersion = lastVersion ? lastVersion.versionNumber + 1 : 1;
+
+    newVersion = await ArticleVersion.create({
+      articleId,
+      title: finalData.title !== undefined ? finalData.title : article.title,
+      content:
+        finalData.content !== undefined ? finalData.content : article.content,
+      attachments:
+        finalData.attachments !== undefined
+          ? finalData.attachments
+          : article.attachments,
+      workspaceId:
+        finalData.workspaceId !== undefined
+          ? finalData.workspaceId
+          : article.workspaceId,
+      versionNumber: nextVersion,
+    });
+  }
+
   await article.update(finalData);
   const updatedArticle = article.toJSON();
 
   notifyRoom(`article_${articleId}`, {
     type: "notification",
     article: updatedArticle,
+    version: newVersion ? newVersion.toJSON() : null,
     message: "Article has been updated!",
   });
 
-  return updatedArticle;
+  return newVersion ? newVersion.toJSON() : updatedArticle;
 };
 
 const deleteArticle = async (articleId) => {

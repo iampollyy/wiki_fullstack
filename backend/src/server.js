@@ -10,8 +10,9 @@ const { registerSocketEvents } = require("./services/notificationService");
 const Article = require("./db/models/article");
 const Comment = require("./db/models/comment");
 const Workspace = require("./db/models/workspace");
+const ArticleVersion = require("./db/models/articleVersion");
 
-const models = { Article, Comment, Workspace };
+const models = { Article, Comment, Workspace, ArticleVersion };
 Object.keys(models).forEach((modelName) => {
   if (models[modelName].associate) {
     models[modelName].associate(models);
