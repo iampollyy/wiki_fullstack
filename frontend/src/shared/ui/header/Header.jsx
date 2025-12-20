@@ -20,6 +20,8 @@ export const Header = () => {
         +
       </Button>
 
+      <Link to="/login" className={styles.loginLink}>Log In</Link>
+
       {showEditor && (
         <div className={styles.editor__modal}>
           <div className={styles.editor__wrapper}>
