@@ -5,8 +5,8 @@ import { Article } from "@pages/ArticlePage/Article";
 import { DiscussionPage } from "@pages/DiscussionPage/DiscussionPage";
 import { WorkspacePage } from "@pages/WorkspacePage/WorkspacePage";
 import { ArticleVersion } from "@pages/ArticleVersionPage/ArticleVersion";
-import { LoginForm } from "@features/logIn/LogInForm";
-import { SignUpForm } from "@features/signUp/signupForm";
+import { LoginForm } from "@features/logIn/LoginForm";
+import { SignUpForm } from "@features/signUp/SignupForm";
 
 export const RoutesConfig: IRoute[] = [
   {
