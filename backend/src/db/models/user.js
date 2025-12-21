@@ -1,24 +1,24 @@
-const {Model, DataTypes} = require('sequelize');
-const sequelize = require('../db');
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("../db");
 
-class User extends Model{}
+class User extends Model {}
 
 User.init(
   {
-    id:{
+    id: {
       type: DataTypes.SERIAL,
       primaryKey: true,
       autoIncrement: true,
     },
-    firtsName:{
+    firtsName: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    lastName:{
+    lastName: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    email:{
+    email: {
       type: DataTypes.TEXT,
       allowNull: false,
       unique: true,
@@ -26,9 +26,15 @@ User.init(
         isEmail: true,
       },
     },
-    passwordHash:{ 
+    passwordHash: {
       type: DataTypes.TEXT,
       allowNull: false,
-    }
+    },
+  },
+  {
+    sequelize,
+    modelName: "User",
+    tableName: "Users",
+    timestamps: true,
   }
-)
+);
