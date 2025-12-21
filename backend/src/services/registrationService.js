@@ -3,7 +3,7 @@ const { notifyRoom } = require("../notificationService");
 const bcrypt = require("bcrypt");
 
 const registerUser = async ({ email, password, firstName, lastName }) => {
-  if (!email && !password) {
+  if (!email || !password) {
     throw new Error("Email and password are required");
   } else {
     const existingUser = await User.findOne({ where: { email } });
