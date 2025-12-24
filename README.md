@@ -138,6 +138,10 @@ DB_PORT=5432
 # Server Configuration
 PORT=5000
 
+# JWT Configuration
+JWT_SECRET=your_secret_key_here
+JWT_EXPIRES_IN=24h
+
 # Socket.IO Configuration (optional)
 SOCKET_ORIGIN=*
 SOCKET_PATH=/socket.io

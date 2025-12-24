@@ -6,11 +6,11 @@ class User extends Model {}
 User.init(
   {
     id: {
-      type: DataTypes.SERIAL,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    firtsName: {
+    firstName: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
@@ -38,3 +38,16 @@ User.init(
     timestamps: true,
   }
 );
+
+User.associate = function (models) {
+  User.hasMany(models.Article, {
+    foreignKey: "authorId",
+    as: "articles",
+  });
+  User.hasMany(models.Comment, {
+    foreignKey: "authorId",
+    as: "comments",
+  });
+};
+
+module.exports = User;

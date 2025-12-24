@@ -1,5 +1,5 @@
 const User = require("../db/models/user");
-const { notifyRoom } = require("../notificationService");
+const { notifyRoom } = require("./notificationService");
 const bcrypt = require("bcrypt");
 
 const registerUser = async ({ email, password, firstName, lastName }) => {

@@ -1,6 +1,8 @@
 import { IArticle } from "@shared/ui/articleCard/model/TArticle";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@core/store/store";
 import styles from "./article.module.scss";
 import { Button } from "@shared/ui/button/Button";
 import { TextEditor } from "@features/createArticle/TextEditor";
@@ -16,6 +18,7 @@ export const Article = () => {
   const navigate = useNavigate();
   const socketRef = useRef<Socket | null>(null);
   const toast = useToast();
+  const token = useSelector((state: RootState) => state.auth.token);
 
   useEffect(() => {
     if (!id) return;
@@ -77,7 +80,15 @@ export const Article = () => {
     if (!article && !id) return;
     const articleId = article?.id ?? id;
 
-    fetch(`http://localhost:5000/articles/${articleId}`, { method: "DELETE" })
+    const headers: HeadersInit = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    fetch(`http://localhost:5000/articles/${articleId}`, {
+      method: "DELETE",
+      headers,
+    })
       .then((response) => {
         if (!response.ok) throw new Error(response.statusText);
         return response.json();

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const registrationService = require("../services/registrationService");
 
-router.post("/signup", async (req, res) => {
+router.post("/", async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
   try {
     const newUser = await registrationService.registerUser({

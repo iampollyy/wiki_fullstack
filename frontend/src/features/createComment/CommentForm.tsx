@@ -1,5 +1,7 @@
 import styles from "./commentForm.module.scss";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@core/store/store";
 import { Button } from "@shared/ui/button/Button";
 import { useParams } from "react-router-dom";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -13,6 +15,7 @@ export const CommentForm = ({ onCommentAdded }: CommentFormProps) => {
   const [name, setName] = useState("");
   const { id } = useParams();
   const toast = useToast();
+  const token = useSelector((state: RootState) => state.auth.token);
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
@@ -31,12 +34,17 @@ export const CommentForm = ({ onCommentAdded }: CommentFormProps) => {
       toast.showWarning("Article ID not found in URL");
       return;
     }
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     fetch(`http://localhost:5000/comments/article/${id}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ author: name, content }),
+      headers,
+      body: JSON.stringify({ content }),
     })
       
       .then((response) => response.json())

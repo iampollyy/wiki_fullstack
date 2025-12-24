@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const workspaceService = require("../services/workspaceService");
+const authMiddleware = require("../middleware/auth");
 
 router.get("/", async (req, res) => {
   try {
@@ -24,7 +25,7 @@ router.get("/slug/:slug", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   const { name, slug } = req.body;
 
   if (!name || !slug) {

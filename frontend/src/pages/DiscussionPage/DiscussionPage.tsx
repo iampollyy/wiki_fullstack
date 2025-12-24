@@ -13,7 +13,14 @@ export const DiscussionPage = () => {
     if (!id) return;
     fetch(`http://localhost:5000/comments/article/${id}`)
       .then((response) => response.json())
-      .then((data) => setComments(data.sort((a: IComment, b: IComment) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())))
+      .then((data) =>
+        setComments(
+          data.sort(
+            (a: IComment, b: IComment) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+        )
+      )
       .catch((error) => console.error("Failed to load comments:", error));
   };
 

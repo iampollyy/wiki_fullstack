@@ -14,7 +14,7 @@ const getCommentsByArticleId = async (articleId) => {
   return comments.map((comment) => comment.toJSON());
 };
 
-const createComment = async ({ articleId, author, content }) => {
+const createComment = async ({ articleId, authorId, content }) => {
   const id = parseInt(articleId, 10);
   if (isNaN(id)) {
     throw new Error("Invalid article ID");
@@ -27,14 +27,14 @@ const createComment = async ({ articleId, author, content }) => {
 
   const comment = await Comment.create({
     articleId: id,
-    author: author || null,
+    authorId,
     content,
   });
 
   return comment.toJSON();
 };
 
-const deleteComment = async (commentId) => {
+const deleteComment = async (commentId, userId) => {
   const id = parseInt(commentId, 10);
   if (isNaN(id)) {
     return false;
@@ -45,11 +45,15 @@ const deleteComment = async (commentId) => {
     return false;
   }
 
+  if (comment.authorId !== userId) {
+    throw new Error("Access denied");
+  }
+
   await comment.destroy();
   return true;
 };
 
-const updateComment = async (commentId, updatedData) => {
+const updateComment = async (commentId, updatedData, userId) => {
   const id = parseInt(commentId, 10);
   if (isNaN(id)) {
     throw new Error("Invalid comment ID");
@@ -59,11 +63,15 @@ const updateComment = async (commentId, updatedData) => {
   if (!comment) {
     return null;
   }
+
+  if (comment.authorId !== userId) {
+    throw new Error("Access denied");
+  }
+
   await comment.update(updatedData);
   const updatedComment = await Comment.findByPk(id);
   return updatedComment ? updatedComment.toJSON() : null;
 };
-  
 
 module.exports = {
   getCommentsByArticleId,

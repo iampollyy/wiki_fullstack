@@ -1,4 +1,6 @@
 import { Button } from "@shared/ui/button/Button";
+import { useSelector } from "react-redux";
+import { RootState } from "@core/store/store";
 import styles from "./comment.module.scss";
 import { IComment } from "./model/IComment";
 import delete_icon from "@assets/icons/delete_icon.svg";
@@ -14,13 +16,20 @@ interface CommentProps {
 
 export const Comment = ({ comment, onUpdate }: CommentProps) => {
   const toast = useToast();
+  const token = useSelector((state: RootState) => state.auth.token);
   const [isEditingComment, setIsEditingComment] = useState(false);
 
   const handleDeleteComment = () => {
     if (!comment.id) return;
 
+    const headers: HeadersInit = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     fetch(`http://localhost:5000/comments/${comment.id}`, {
       method: "DELETE",
+      headers,
     })
       .then((response) => {
         if (!response.ok) {
@@ -68,9 +77,7 @@ export const Comment = ({ comment, onUpdate }: CommentProps) => {
       <div className={styles.comment__wrapper}>
         <div className={styles.comment__header}>
           <div className={styles.comment__info}>
-            <p className={styles.comment__author}>
-              {comment.author || "John Doe"}
-            </p>
+            <p className={styles.comment__author}>{comment.author}</p>
             <p className={styles.comment__date}>
               {new Date(comment.createdAt).toLocaleDateString()}
             </p>

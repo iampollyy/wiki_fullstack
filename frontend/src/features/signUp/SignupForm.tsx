@@ -1,20 +1,74 @@
+import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
 import styles from "./signupForm.module.scss";
 import { Button } from "@shared/ui/button/Button";
+import { useToast } from "@shared/ui/toast/ToastContext";
 
 export function SignUpForm() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!firstName || !lastName || !email || !password) {
+      toast.showWarning("Please fill in all fields");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.showWarning("Password must be at least 6 characters long");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Registration failed");
+      }
+
+      toast.showSuccess("Registration successful! Please login.");
+      navigate("/login");
+    } catch (err: any) {
+      console.error("Error registering user:", err);
+      toast.showError(err.message || "Failed to register. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={styles.signup}>
       <div className={styles.signup__container}>
         <h1 className={styles.signup__heading}>Create an account</h1>
 
-        <form className={styles.signup__form}>
+        <form className={styles.signup__form} onSubmit={handleSubmit}>
           <label className={styles.signup__field}>
             Name
             <input
               type="text"
               name="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               placeholder="Enter your name"
               className={styles.signup__input}
+              required
             />
           </label>
 
@@ -22,9 +76,12 @@ export function SignUpForm() {
             Surname
             <input
               type="text"
-              name="surname"
+              name="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               placeholder="Enter your surname"
               className={styles.signup__input}
+              required
             />
           </label>
 
@@ -33,8 +90,11 @@ export function SignUpForm() {
             <input
               type="email"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
               className={styles.signup__input}
+              required
             />
           </label>
 
@@ -43,12 +103,25 @@ export function SignUpForm() {
             <input
               type="password"
               name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Create your password"
               className={styles.signup__input}
+              required
+              minLength={6}
             />
           </label>
 
-          <Button className={styles.signup__button}>Sign up</Button>
+          <Button 
+            type="submit" 
+            className={styles.signup__button}
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing up..." : "Sign up"}
+          </Button>
+          <p>
+            Already have an account? <Link to="/login">Sign In</Link>
+          </p>
         </form>
       </div>
     </div>
