@@ -7,7 +7,6 @@ export const store = configureStore({
 
 store.subscribe(() => {
   const user = store.getState().auth;
-  localStorage.setItem("authenticatedAs", JSON.stringify(user));
 });
 
 export type RootState = ReturnType<typeof store.getState>;

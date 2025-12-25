@@ -18,7 +18,12 @@ const registerUser = async ({ email, password, firstName, lastName }) => {
       lastName,
     });
     notifyRoom("registrations", `Registered successfully: ${email}`);
-    return newUser.toJSON();
+    return {
+      id: newUser.id,
+      email: newUser.email,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+    };
   }
 };
 
