@@ -5,6 +5,7 @@ import { Article } from "@pages/ArticlePage/Article";
 import { DiscussionPage } from "@pages/DiscussionPage/DiscussionPage";
 import { WorkspacePage } from "@pages/WorkspacePage/WorkspacePage";
 import { LoginForm } from "@features/login/LoginForm";
+import { ArticleVersion } from "@pages/ArticleVersionPage/ArticleVersion";
 import { SignUpForm } from "@features/signUp/SignupForm";
 
 export const RoutesConfig: IRoute[] = [
@@ -29,6 +30,10 @@ export const RoutesConfig: IRoute[] = [
     path: "/articles/:id",
     element: <Article />,
     isPrivate: true,
+  },
+  {
+    path: "/articles/:id/versions/id/:versionId",
+    element: <ArticleVersion />,
   },
   {
     path: "/articles/:id/discussion",
