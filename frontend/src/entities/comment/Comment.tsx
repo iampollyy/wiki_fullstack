@@ -19,6 +19,10 @@ export const Comment = ({ comment, onUpdate }: CommentProps) => {
   const token = useSelector((state: RootState) => state.auth.token);
   const [isEditingComment, setIsEditingComment] = useState(false);
 
+  const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
+
+  const isAuthor = currentUserId === comment.authorId;
+
   const handleDeleteComment = () => {
     if (!comment.id) return;
 
@@ -82,15 +86,16 @@ export const Comment = ({ comment, onUpdate }: CommentProps) => {
               {new Date(comment.createdAt).toLocaleDateString()}
             </p>
           </div>
-
-          <div className={styles.comment__actions}>
-            <Button variant="tertiary" onClick={handleEditComment}>
-              <img src={edit_icon} alt="Edit" />
-            </Button>
-            <Button variant="tertiary" onClick={handleDeleteComment}>
-              <img src={delete_icon} alt="Delete" />
-            </Button>
-          </div>
+          {isAuthor && (
+            <div className={styles.comment__actions}>
+              <Button variant="tertiary" onClick={handleEditComment}>
+                <img src={edit_icon} alt="Edit" />
+              </Button>
+              <Button variant="tertiary" onClick={handleDeleteComment}>
+                <img src={delete_icon} alt="Delete" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

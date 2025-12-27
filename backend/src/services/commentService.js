@@ -1,5 +1,14 @@
 const Comment = require("../db/models/comment");
 const Article = require("../db/models/article");
+const User = require("../db/models/user");
+
+const mapComment = (comment) => ({
+  id: comment.id,
+  content: comment.content,
+  createdAt: comment.createdAt,
+  authorId: comment.authorId,
+  author: `${comment.author.firstName} ${comment.author.lastName}`,
+});
 
 const getCommentsByArticleId = async (articleId) => {
   const id = parseInt(articleId, 10);
@@ -9,9 +18,17 @@ const getCommentsByArticleId = async (articleId) => {
 
   const comments = await Comment.findAll({
     where: { articleId: id },
+    include: [
+      {
+        model: User,
+        as: "author",
+        attributes: ["firstName", "lastName"],
+      },
+    ],
     order: [["createdAt", "ASC"]],
   });
-  return comments.map((comment) => comment.toJSON());
+
+  return comments.map(mapComment);
 };
 
 const createComment = async ({ articleId, authorId, content }) => {
@@ -31,7 +48,17 @@ const createComment = async ({ articleId, authorId, content }) => {
     content,
   });
 
-  return comment.toJSON();
+  const commentWithAuthor = await Comment.findByPk(comment.id, {
+    include: [
+      {
+        model: User,
+        as: "author",
+        attributes: ["firstName", "lastName"],
+      },
+    ],
+  });
+
+  return mapComment(commentWithAuthor);
 };
 
 const deleteComment = async (commentId, userId) => {
@@ -69,8 +96,18 @@ const updateComment = async (commentId, updatedData, userId) => {
   }
 
   await comment.update(updatedData);
-  const updatedComment = await Comment.findByPk(id);
-  return updatedComment ? updatedComment.toJSON() : null;
+
+  const updatedComment = await Comment.findByPk(id, {
+    include: [
+      {
+        model: User,
+        as: "author",
+        attributes: ["firstName", "lastName"],
+      },
+    ],
+  });
+
+  return mapComment(updatedComment);
 };
 
 module.exports = {

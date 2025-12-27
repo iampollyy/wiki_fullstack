@@ -12,7 +12,6 @@ interface CommentFormProps {
 
 export const CommentForm = ({ onCommentAdded }: CommentFormProps) => {
   const [content, setContent] = useState("");
-  const [name, setName] = useState("");
   const { id } = useParams();
   const toast = useToast();
   const token = useSelector((state: RootState) => state.auth.token);
@@ -20,13 +19,10 @@ export const CommentForm = ({ onCommentAdded }: CommentFormProps) => {
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
   };
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!name.trim() || !content.trim()) {
+    if (!content.trim()) {
       toast.showError("Name and comment are required");
       return;
     }
@@ -46,11 +42,9 @@ export const CommentForm = ({ onCommentAdded }: CommentFormProps) => {
       headers,
       body: JSON.stringify({ content }),
     })
-      
       .then((response) => response.json())
       .then(() => {
         setContent("");
-        setName("");
         toast.showSuccess("Comment added successfully!");
         if (onCommentAdded) {
           onCommentAdded();
@@ -62,16 +56,6 @@ export const CommentForm = ({ onCommentAdded }: CommentFormProps) => {
   return (
     <>
       <form className={styles.commentForm} onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input
-            type="text"
-            name="name"
-            value={name}
-            onChange={handleNameChange}
-          />
-        </label>
-
         <label>
           Comment:
           <textarea
