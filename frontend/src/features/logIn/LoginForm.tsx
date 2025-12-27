@@ -44,7 +44,7 @@ export function LoginForm() {
       hasError = true;
     }
 
-    if (trimmedEmail || !trimmedPassword) {
+    if (!trimmedEmail || !trimmedPassword) {
       setPasswordError("Verify email or password");
       hasError = true;
     }
