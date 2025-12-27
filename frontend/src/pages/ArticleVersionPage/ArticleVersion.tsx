@@ -19,7 +19,7 @@ export const ArticleVersion = () => {
         setLoading(true);
         setError(null);
         const response = await fetch(
-          `http://localhost:5000/articles/${id}/versions/id/${versionId}`
+          `http://localhost:5000/articles/${id}/versions/${versionId}`
         );
 
         if (!response.ok) {

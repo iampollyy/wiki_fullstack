@@ -1,7 +1,9 @@
 import { Button } from "@shared/ui/button/Button";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { useToast } from "@shared/ui/toast/ToastContext";
-import {useMemo, useRef, useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@core/store/store";
+import { useMemo, useRef, useState, useEffect } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import styles from "./textEditor.module.scss";
@@ -35,9 +37,9 @@ export function TextEditor({
   );
 
   const toast = useToast();
+  const token = useSelector((state: RootState) => state.auth.token);
   const quillRef = useRef<any>(null);
   const attachmentRef = useRef<HTMLInputElement | null>(null);
-
 
   const modules = useMemo(
     () => ({
@@ -84,10 +86,16 @@ export function TextEditor({
     formData.append("attachment", file);
 
     try {
+      const headers: HeadersInit = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(
         "http://localhost:5000/articles/upload-attachment",
         {
           method: "POST",
+          headers,
           body: formData,
         }
       );
@@ -130,11 +138,16 @@ export function TextEditor({
     const method = isEdit ? "PUT" : "POST";
 
     try {
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify(articleData),
       });
 
@@ -189,22 +202,22 @@ export function TextEditor({
         ref={quillRef}
       />
 
-<div className={styles.attachmentField}>
-    <input
-      id="attachment-input"
-      type="file"
-      ref={attachmentRef}
-      className={styles.attachmentInputHidden}
-      onChange={handleAttachment}
-    />
-    <Button
-      size="sm"
-      onClick={() => attachmentRef.current?.click()}
-      className={styles.attachmentTrigger}
-    >
-      + Add attachment
-    </Button>
-  </div>
+      <div className={styles.attachmentField}>
+        <input
+          id="attachment-input"
+          type="file"
+          ref={attachmentRef}
+          className={styles.attachmentInputHidden}
+          onChange={handleAttachment}
+        />
+        <Button
+          size="sm"
+          onClick={() => attachmentRef.current?.click()}
+          className={styles.attachmentTrigger}
+        >
+          + Add attachment
+        </Button>
+      </div>
       <FilePreviewList
         files={attachments}
         onRemove={(index) => {

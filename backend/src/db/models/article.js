@@ -31,6 +31,14 @@ Article.init(
         key: "id",
       },
     },
+    authorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+    },
   },
   {
     sequelize,
@@ -49,11 +57,14 @@ Article.associate = function (models) {
     foreignKey: "workspaceId",
     as: "workspace",
   });
+  Article.belongsTo(models.User, {
+    foreignKey: "authorId",
+    as: "author",
+  });
   Article.hasMany(models.ArticleVersion, {
     foreignKey: "articleId",
     as: "versions",
   });
-
 };
 
 module.exports = Article;

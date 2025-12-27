@@ -1,6 +1,8 @@
 import { IArticle } from "@shared/ui/articleCard/model/TArticle";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@core/store/store";
 import styles from "./article.module.scss";
 import { Button } from "@shared/ui/button/Button";
 import { TextEditor } from "@features/createArticle/TextEditor";
@@ -14,50 +16,7 @@ export const Article = () => {
   const [article, setArticle] = useState<IArticle | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
-  const socketRef = useRef<Socket | null>(null);
-  const toast = useToast();
-
-  useEffect(() => {
-    if (!id) return;
-
-    const socket = io("http://localhost:5000", {
-      transports: ["websocket"],
-    });
-
-    socketRef.current = socket;
-
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-      socket.emit("join", `article_${id}`);
-    });
-
-    socket.on("joined", (roomName: string) => {
-      console.log("Joined room", roomName);
-    });
-
-    socket.on("notification", (payload) => {
-      console.log("Socket notification:", payload);
-      toast.showInfo(`Notification: ${payload.message}`);
-      setArticle(payload.article);
-    });
-
-    socket.on("disconnect", (reason) => {
-      console.log("Socket disconnected:", reason);
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("Socket connect error:", err);
-    });
-
-    return () => {
-      if (socket.connected) {
-        socket.emit("leave", `article_${id}`);
-      }
-      socket.off("notification");
-      socket.off("joined");
-      socket.disconnect();
-    };
-  }, [id]);
+  const token = useSelector((state: RootState) => state.auth.token);
 
   useEffect(() => {
     if (!id) return;
@@ -77,7 +36,15 @@ export const Article = () => {
     if (!article && !id) return;
     const articleId = article?.id ?? id;
 
-    fetch(`http://localhost:5000/articles/${articleId}`, { method: "DELETE" })
+    const headers: HeadersInit = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    fetch(`http://localhost:5000/articles/${articleId}`, {
+      method: "DELETE",
+      headers,
+    })
       .then((response) => {
         if (!response.ok) throw new Error(response.statusText);
         return response.json();

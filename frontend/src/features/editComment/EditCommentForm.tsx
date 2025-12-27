@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@core/store/store";
 import { Button } from "@shared/ui/button/Button";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import styles from "./editCommentForm.module.scss";
@@ -17,6 +19,7 @@ export const EditCommentForm = ({
   onCancel,
 }: EditCommentFormProps) => {
   const toast = useToast();
+  const token = useSelector((state: RootState) => state.auth.token);
   const [content, setContent] = useState(initialContent);
 
   const handleUpdateComment = (event: React.FormEvent) => {
@@ -27,11 +30,16 @@ export const EditCommentForm = ({
       return;
     }
 
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     fetch(`http://localhost:5000/comments/${commentId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({ content }),
     })
       .then((response) => {
