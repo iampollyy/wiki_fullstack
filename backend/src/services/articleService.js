@@ -111,15 +111,13 @@ const updateArticle = async (articleId, updatedData, userId) => {
     throw new Error("Article not found");
   }
 
-  // Проверка прав: только автор может редактировать (если userId передан)
-  if (userId !== undefined && article.authorId !== userId) {
+  if (!userId) {
     throw new Error("Access denied");
   }
 
   const { workspaceSlug, workspaceName, ...restData } = updatedData;
   let finalData = { ...restData };
 
-  // Обработать workspace если передан
   if (workspaceSlug) {
     let workspace = await Workspace.findOne({
       where: { slug: workspaceSlug },
@@ -135,7 +133,6 @@ const updateArticle = async (articleId, updatedData, userId) => {
     finalData.workspaceId = workspace.id;
   }
 
-  // Создать новую версию если изменены title или content
   let newVersion = null;
   if (finalData.title || finalData.content) {
     const lastVersion = await ArticleVersion.findOne({
@@ -155,7 +152,6 @@ const updateArticle = async (articleId, updatedData, userId) => {
     });
   }
 
-  // Обновить саму статью
   await article.update(finalData);
   const updatedArticle = article.toJSON();
 
@@ -180,8 +176,7 @@ const deleteArticle = async (articleId, userId) => {
     return false;
   }
 
-  // Проверка прав: только автор может удалять (если userId передан)
-  if (userId !== undefined && article.authorId !== userId) {
+  if (!userId) {
     throw new Error("Access denied");
   }
 
