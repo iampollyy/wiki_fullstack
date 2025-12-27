@@ -23,7 +23,15 @@ const loginUser = async ({ email, password }) => {
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || "24h" }
   );
-  return { token, user: user.toJSON() };
+  return {
+    token,
+    user: {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    },
+  };
 };
 
 module.exports = {
