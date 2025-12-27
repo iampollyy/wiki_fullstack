@@ -10,27 +10,57 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const toast = useToast();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const toast = useToast();
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      toast.showWarning("Please enter both email and password");
-      return;
+    setEmailError(null);
+    setPasswordError(null);
+
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    let hasError = false;
+
+    if (!trimmedEmail) {
+      setEmailError("Email is required");
+      hasError = true;
+    } else if (!emailPattern.test(trimmedEmail)) {
+      setEmailError("Invalid email address");
+      hasError = true;
     }
+
+    if (!trimmedPassword) {
+      setPasswordError("Password is required");
+      hasError = true;
+    }
+
+    if (trimmedEmail || !trimmedPassword) {
+      setPasswordError("Verify email or password");
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     setIsLoading(true);
 
     try {
       const response = await fetch("http://localhost:5000/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password: trimmedPassword,
+        }),
       });
 
       const data = await response.json();
@@ -40,14 +70,24 @@ export function LoginForm() {
       }
 
       dispatch(loginSuccess({ token: data.token, user: data.user }));
-      toast.showSuccess("Login successful!");
       navigate("/");
     } catch (err: any) {
-      console.error("Error logging in:", err);
-      toast.showError(err.message || "Failed to login. Please try again.");
+      if (err.message) {
+        toast.showWarning("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (emailError) setEmailError(null);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (passwordError) setPasswordError(null);
   };
 
   return (
@@ -55,18 +95,25 @@ export function LoginForm() {
       <div className={styles.loginform__container}>
         <h1 className={styles.loginform__heading}>Sign In</h1>
 
-        <form className={styles.loginform__form} onSubmit={handleSubmit}>
+        <form
+          className={styles.loginform__form}
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <label className={styles.loginform__field}>
             Email
             <input
               type="email"
               name="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               placeholder="Enter your email"
               className={styles.loginform__input}
               required
             />
+            {emailError && (
+              <span className={styles.loginform__error}>{emailError}</span>
+            )}
           </label>
 
           <label className={styles.loginform__field}>
@@ -75,15 +122,18 @@ export function LoginForm() {
               type="password"
               name="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               placeholder="Enter your password"
               className={styles.loginform__input}
               required
             />
+            {passwordError && (
+              <span className={styles.loginform__error}>{passwordError}</span>
+            )}
           </label>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className={styles.loginform__button}
             disabled={isLoading}
           >
