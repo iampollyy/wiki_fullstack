@@ -1,10 +1,13 @@
 import { Button } from "@shared/ui/button/Button";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { useToast } from "@shared/ui/toast/ToastContext";
-import {useMemo, useRef, useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@core/store/store";
+import { useMemo, useRef, useState, useEffect } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import styles from "./textEditor.module.scss";
+import { apiFetch } from "@shared/utils/fetch";
 
 interface TextEditorProps {
   mode?: "create" | "edit";
@@ -37,7 +40,6 @@ export function TextEditor({
   const toast = useToast();
   const quillRef = useRef<any>(null);
   const attachmentRef = useRef<HTMLInputElement | null>(null);
-
 
   const modules = useMemo(
     () => ({
@@ -76,7 +78,9 @@ export function TextEditor({
     "link",
   ];
 
-  const handleAttachment = async (event) => {
+  const handleAttachment = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -84,20 +88,10 @@ export function TextEditor({
     formData.append("attachment", file);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/articles/upload-attachment",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        toast.showError(
-          "Failed to upload attachment. Please check your file and try again."
-        );
-        throw new Error(`Upload failed (${response.status})`);
-      }
+      const response = await apiFetch("articles/upload-attachment", {
+        method: "POST",
+        body: formData,
+      });
 
       const { url } = await response.json();
 
@@ -105,6 +99,9 @@ export function TextEditor({
       toast.showSuccess("Attachment uploaded successfully!");
     } catch (error) {
       console.error("Upload error:", error);
+      toast.showError(
+        "Failed to upload attachment. Please check your file and try again."
+      );
     }
 
     event.target.value = "";
@@ -119,28 +116,19 @@ export function TextEditor({
     const articleData = {
       title,
       content,
-      attachments: attachments,
+      attachments,
       workspaceSlug: workspaceSlug || null,
     };
 
     const isEdit = mode === "edit" && articleId;
-    const url = isEdit
-      ? `http://localhost:5000/articles/${articleId}`
-      : "http://localhost:5000/articles";
+    const url = isEdit ? `articles/${articleId}` : "articles";
     const method = isEdit ? "PUT" : "POST";
 
     try {
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(articleData),
       });
-
-      if (!response.ok) {
-        throw new Error(`Error saving article (${response.status})`);
-      }
 
       const result = await response.json();
       onSubmitSuccess?.(result);
@@ -189,22 +177,22 @@ export function TextEditor({
         ref={quillRef}
       />
 
-<div className={styles.attachmentField}>
-    <input
-      id="attachment-input"
-      type="file"
-      ref={attachmentRef}
-      className={styles.attachmentInputHidden}
-      onChange={handleAttachment}
-    />
-    <Button
-      size="sm"
-      onClick={() => attachmentRef.current?.click()}
-      className={styles.attachmentTrigger}
-    >
-      + Add attachment
-    </Button>
-  </div>
+      <div className={styles.attachmentField}>
+        <input
+          id="attachment-input"
+          type="file"
+          ref={attachmentRef}
+          className={styles.attachmentInputHidden}
+          onChange={handleAttachment}
+        />
+        <Button
+          size="sm"
+          onClick={() => attachmentRef.current?.click()}
+          className={styles.attachmentTrigger}
+        >
+          + Add attachment
+        </Button>
+      </div>
       <FilePreviewList
         files={attachments}
         onRemove={(index) => {

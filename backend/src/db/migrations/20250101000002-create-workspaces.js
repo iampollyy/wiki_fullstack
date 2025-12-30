@@ -3,6 +3,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    const [results] = await queryInterface.sequelize.query(
+      `SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'Workspaces'
+      )`
+    );
+    if (results[0].exists) {
+      console.log('Table "Workspaces" already exists, skipping creation');
+      return;
+    }
+
     await queryInterface.createTable("Workspaces", {
       id: {
         allowNull: false,
