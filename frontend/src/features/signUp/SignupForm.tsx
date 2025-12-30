@@ -14,11 +14,23 @@ export function SignUpForm() {
   const navigate = useNavigate();
   const toast = useToast();
 
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !email || !password) {
+    if (
+      !firstName.trim() ||
+      !lastName.trim() ||
+      !email.trim() ||
+      !password.trim()
+    ) {
       toast.showWarning("Please fill in all fields");
+      return;
+    }
+
+    if (!emailPattern.test(email.trim())) {
+      toast.showWarning("Please enter a valid email address");
       return;
     }
 
@@ -32,23 +44,33 @@ export function SignUpForm() {
     try {
       const response = await apiFetch("signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firstName, lastName, email, password }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Registration failed");
+        if (data?.error?.includes("email")) {
+          toast.showWarning("This email is already in use or invalid");
+        } else if (data?.error?.includes("password")) {
+          toast.showWarning("Password is too weak or invalid");
+        } else if (
+          data?.error?.includes("firstName") ||
+          data?.error?.includes("lastName")
+        ) {
+          toast.showWarning("Please provide a valid name and surname");
+        } else {
+          toast.showWarning("Registration failed. Please check your input.");
+        }
+        return;
       }
 
       toast.showSuccess("Registration successful! Please login.");
       navigate("/login");
     } catch (err: any) {
       console.error("Error registering user:", err);
-      toast.showError(err.message || "Failed to register. Please try again.");
+      toast.showError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +81,11 @@ export function SignUpForm() {
       <div className={styles.signup__container}>
         <h1 className={styles.signup__heading}>Create an account</h1>
 
-        <form className={styles.signup__form} onSubmit={handleSubmit}>
+        <form
+          className={styles.signup__form}
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <label className={styles.signup__field}>
             Name
             <input
@@ -113,13 +139,14 @@ export function SignUpForm() {
             />
           </label>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className={styles.signup__button}
             disabled={isLoading}
           >
             {isLoading ? "Signing up..." : "Sign up"}
           </Button>
+
           <p>
             Already have an account? <Link to="/login">Sign In</Link>
           </p>

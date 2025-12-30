@@ -15,7 +15,6 @@ export function LoginForm() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const toast = useToast();
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,7 +22,6 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setEmailError(null);
     setPasswordError(null);
 
@@ -36,17 +34,12 @@ export function LoginForm() {
       setEmailError("Email is required");
       hasError = true;
     } else if (!emailPattern.test(trimmedEmail)) {
-      setEmailError("Invalid email address");
+      setEmailError("Please enter a valid email address");
       hasError = true;
     }
 
     if (!trimmedPassword) {
       setPasswordError("Password is required");
-      hasError = true;
-    }
-
-    if (!trimmedEmail || !trimmedPassword) {
-      setPasswordError("Verify email or password");
       hasError = true;
     }
 
@@ -67,15 +60,24 @@ export function LoginForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Login failed");
+        if (data?.error?.includes("email")) {
+          setEmailError("Please enter a valid email address");
+        } else if (
+          data?.error?.includes("password") ||
+          data?.error?.includes("Invalid")
+        ) {
+          setPasswordError("Incorrect password. Please try again");
+        } else {
+          toast.showWarning("Login failed. Please check your credentials");
+        }
+        return;
       }
 
       dispatch(loginSuccess({ token: data.token, user: data.user }));
       navigate("/");
     } catch (err: any) {
-      if (err.message) {
-        toast.showWarning("Something went wrong. Please try again.");
-      }
+      console.error("Login error:", err);
+      toast.showWarning("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -140,6 +142,7 @@ export function LoginForm() {
           >
             {isLoading ? "Signing in..." : "Sign in"}
           </Button>
+
           <p>
             Don't have an account yet? <Link to="/signup">Sign Up</Link>
           </p>
