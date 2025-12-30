@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@core/store/store";
 import { Button } from "@shared/ui/button/Button";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import styles from "./editCommentForm.module.scss";
+import { apiFetch } from "@shared/utils/fetch";
 
 interface EditCommentFormProps {
   commentId: string;
@@ -19,43 +18,28 @@ export const EditCommentForm = ({
   onCancel,
 }: EditCommentFormProps) => {
   const toast = useToast();
-  const token = useSelector((state: RootState) => state.auth.token);
   const [content, setContent] = useState(initialContent);
 
-  const handleUpdateComment = (event: React.FormEvent) => {
+  const handleUpdateComment = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     if (!content.trim()) {
       toast.showError("Comment content cannot be empty");
       return;
     }
 
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    fetch(`http://localhost:5000/comments/${commentId}`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify({ content }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to update comment");
-        }
-        return response.json();
-      })
-      .then(() => {
-        toast.showSuccess("Comment updated successfully");
-        onSave();
-      })
-      .catch((error) => {
-        console.error("Error updating comment:", error);
-        toast.showError("Failed to update comment");
+    try {
+      await apiFetch(`comments/${commentId}`, {
+        method: "PUT",
+        body: JSON.stringify({ content }),
       });
+
+      toast.showSuccess("Comment updated successfully");
+      onSave();
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      toast.showError("Failed to update comment");
+    }
   };
 
   return (
@@ -67,7 +51,9 @@ export const EditCommentForm = ({
         className={styles.textarea_edit}
       />
       <div className={styles.buttonGroup}>
-        <Button type="submit" size="sm">Save</Button>
+        <Button type="submit" size="sm">
+          Save
+        </Button>
         <Button type="button" variant="tertiary" onClick={onCancel}>
           Cancel
         </Button>

@@ -7,6 +7,7 @@ import { useMemo, useRef, useState, useEffect } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import styles from "./textEditor.module.scss";
+import { apiFetch } from "@shared/utils/fetch";
 
 interface TextEditorProps {
   mode?: "create" | "edit";
@@ -37,7 +38,6 @@ export function TextEditor({
   );
 
   const toast = useToast();
-  const token = useSelector((state: RootState) => state.auth.token);
   const quillRef = useRef<any>(null);
   const attachmentRef = useRef<HTMLInputElement | null>(null);
 
@@ -78,7 +78,9 @@ export function TextEditor({
     "link",
   ];
 
-  const handleAttachment = async (event) => {
+  const handleAttachment = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -86,26 +88,10 @@ export function TextEditor({
     formData.append("attachment", file);
 
     try {
-      const headers: HeadersInit = {};
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      const response = await fetch(
-        "http://localhost:5000/articles/upload-attachment",
-        {
-          method: "POST",
-          headers,
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        toast.showError(
-          "Failed to upload attachment. Please check your file and try again."
-        );
-        throw new Error(`Upload failed (${response.status})`);
-      }
+      const response = await apiFetch("articles/upload-attachment", {
+        method: "POST",
+        body: formData,
+      });
 
       const { url } = await response.json();
 
@@ -113,6 +99,9 @@ export function TextEditor({
       toast.showSuccess("Attachment uploaded successfully!");
     } catch (error) {
       console.error("Upload error:", error);
+      toast.showError(
+        "Failed to upload attachment. Please check your file and try again."
+      );
     }
 
     event.target.value = "";
@@ -127,33 +116,19 @@ export function TextEditor({
     const articleData = {
       title,
       content,
-      attachments: attachments,
+      attachments,
       workspaceSlug: workspaceSlug || null,
     };
 
     const isEdit = mode === "edit" && articleId;
-    const url = isEdit
-      ? `http://localhost:5000/articles/${articleId}`
-      : "http://localhost:5000/articles";
+    const url = isEdit ? `articles/${articleId}` : "articles";
     const method = isEdit ? "PUT" : "POST";
 
     try {
-      const headers: HeadersInit = {
-        "Content-Type": "application/json",
-      };
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
-        headers,
         body: JSON.stringify(articleData),
       });
-
-      if (!response.ok) {
-        throw new Error(`Error saving article (${response.status})`);
-      }
 
       const result = await response.json();
       onSubmitSuccess?.(result);

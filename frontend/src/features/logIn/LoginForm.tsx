@@ -5,6 +5,7 @@ import styles from "./logInForm.module.scss";
 import { Button } from "@shared/ui/button/Button";
 import { loginSuccess } from "@core/store/slices/auth/authSlice";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { apiFetch } from "@shared/utils/fetch";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -54,7 +55,7 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await apiFetch("login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

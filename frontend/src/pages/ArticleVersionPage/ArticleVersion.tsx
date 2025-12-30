@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import styles from "./articleVersion.module.scss";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { VersionSubmenu } from "@shared/ui/versionSubmenu/versionSubmenu";
+import { apiFetch } from "@shared/utils/fetch";
 
 export const ArticleVersion = () => {
   const { id, versionId } = useParams();
@@ -14,22 +15,14 @@ export const ArticleVersion = () => {
   useEffect(() => {
     if (!id || !versionId) return;
 
-    const fetchVersion = async () => {
+    const loadVersion = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(
-          `http://localhost:5000/articles/${id}/versions/${versionId}`
-        );
 
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error("Version not found");
-          }
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        const response = await apiFetch(`articles/${id}/versions/${versionId}`);
         const data = await response.json();
+
         setVersion(data);
       } catch (err) {
         console.error("Failed to load version:", err);
@@ -39,7 +32,7 @@ export const ArticleVersion = () => {
       }
     };
 
-    fetchVersion();
+    loadVersion();
   }, [id, versionId]);
 
   const formatDate = (date: Date | string) => {
@@ -53,8 +46,11 @@ export const ArticleVersion = () => {
     });
   };
 
-  if (loading) return <div className={styles.articleVersion}>Loading...</div>;
-  if (error)
+  if (loading) {
+    return <div className={styles.articleVersion}>Loading...</div>;
+  }
+
+  if (error) {
     return (
       <div className={styles.articleVersion}>
         <div className={styles.error}>Error: {error}</div>
@@ -63,8 +59,11 @@ export const ArticleVersion = () => {
         </Link>
       </div>
     );
-  if (!version)
+  }
+
+  if (!version) {
     return <div className={styles.articleVersion}>Version not found</div>;
+  }
 
   return (
     <section className={styles.articleVersion}>
@@ -100,6 +99,7 @@ export const ArticleVersion = () => {
       </div>
 
       <FilePreviewList files={version.attachments || []} onRemove={() => {}} />
+
       <div
         className={styles.articleVersion__description}
         dangerouslySetInnerHTML={{ __html: version.content }}

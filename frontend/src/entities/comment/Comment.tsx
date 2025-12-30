@@ -8,6 +8,7 @@ import edit_icon from "@assets/icons/edit_icon.svg";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { useState } from "react";
 import { EditCommentForm } from "@features/editComment/EditCommentForm";
+import { apiFetch } from "@shared/utils/fetch";
 
 interface CommentProps {
   comment: IComment;
@@ -23,33 +24,20 @@ export const Comment = ({ comment, onUpdate }: CommentProps) => {
 
   const isAuthor = currentUserId === comment.authorId;
 
-  const handleDeleteComment = () => {
+  const handleDeleteComment = async () => {
     if (!comment.id) return;
 
-    const headers: HeadersInit = {};
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    fetch(`http://localhost:5000/comments/${comment.id}`, {
-      method: "DELETE",
-      headers,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to delete comment");
-        }
-      })
-      .then(() => {
-        toast.showSuccess("Comment deleted successfully");
-        if (onUpdate) {
-          onUpdate();
-        }
-      })
-      .catch((error) => {
-        console.error("Error deleting comment:", error);
-        toast.showError("Failed to delete comment");
+    try {
+      await apiFetch(`comments/${comment.id}`, {
+        method: "DELETE",
       });
+
+      toast.showSuccess("Comment deleted successfully");
+      onUpdate?.();
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      toast.showError("Failed to delete comment");
+    }
   };
 
   const handleEditComment = () => {

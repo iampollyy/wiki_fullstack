@@ -4,22 +4,30 @@ import { useNavigate } from "react-router-dom";
 import { WorkSpaceList } from "@shared/ui/workSpaceList/WorkSpaceList";
 import { IWorkSpace } from "@entities/workspace/model/workspage";
 import { useEffect, useState } from "react";
+import { apiFetch } from "@shared/utils/fetch";
 
 export const Home = () => {
   const [workspaces, setWorkspaces] = useState<IWorkSpace[]>([]);
+  const navigate = useNavigate();
+
   useEffect(() => {
-    fetch("http://localhost:5000/workspaces")
-      .then((response) => response.json())
-      .then((data) => {
+    const loadWorkspaces = async () => {
+      try {
+        const response = await apiFetch("workspaces");
+        const data = await response.json();
         const workspacesArray = Array.isArray(data) ? data : [];
         setWorkspaces(workspacesArray);
-      })
-      .catch((error) => console.error("Failed to load workspaces:", error));
+      } catch (error) {
+        console.error("Failed to load workspaces:", error);
+      }
+    };
+
+    loadWorkspaces();
   }, []);
-  const navigate = useNavigate();
-  function onGoToArticlesClick() {
+
+  const onGoToArticlesClick = () => {
     navigate("/articles");
-  }
+  };
 
   return (
     <section className={styles.home}>

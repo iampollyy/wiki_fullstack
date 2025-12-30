@@ -3,6 +3,7 @@ import { useState } from "react";
 import styles from "./signupForm.module.scss";
 import { Button } from "@shared/ui/button/Button";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { apiFetch } from "@shared/utils/fetch";
 
 export function SignUpForm() {
   const [firstName, setFirstName] = useState("");
@@ -29,7 +30,7 @@ export function SignUpForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/signup", {
+      const response = await apiFetch("signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
