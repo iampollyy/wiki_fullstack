@@ -51,17 +51,23 @@ export function SignUpForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        if (data?.error?.includes("email")) {
-          toast.showWarning("This email is already in use or invalid");
-        } else if (data?.error?.includes("password")) {
+        const errorMessage = data?.error || "";
+        
+        if (errorMessage.includes("already in use") || errorMessage.includes("already exists")) {
+          toast.showWarning("This email is already in use");
+        } else if (errorMessage.includes("valid email") || errorMessage.includes("email")) {
+          toast.showWarning("Please enter a valid email address");
+        } else if (errorMessage.includes("password") || errorMessage.includes("Password")) {
           toast.showWarning("Password is too weak or invalid");
         } else if (
-          data?.error?.includes("firstName") ||
-          data?.error?.includes("lastName")
+          errorMessage.includes("firstName") ||
+          errorMessage.includes("First name") ||
+          errorMessage.includes("lastName") ||
+          errorMessage.includes("Last name")
         ) {
           toast.showWarning("Please provide a valid name and surname");
         } else {
-          toast.showWarning("Registration failed. Please check your input.");
+          toast.showWarning(errorMessage || "Registration failed. Please check your input.");
         }
         return;
       }

@@ -4,7 +4,7 @@ const articleService = require("../services/articleService");
 const upload = require("../middleware/fileUpload");
 const authMiddleware = require("../middleware/auth");
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const articles = await articleService.getArticles();
     res.json(articles);
@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   const articleId = req.params.id;
 
   try {

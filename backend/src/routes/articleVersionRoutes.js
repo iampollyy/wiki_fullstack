@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const articleVersionService = require("../services/articleVersionService");
+const authMiddleware = require("../middleware/auth");
 
-router.get("/:articleId/versions/:versionNumber", async (req, res) => {
+router.get("/:articleId/versions/:versionNumber", authMiddleware, async (req, res) => {
   const articleId = req.params.articleId;
   const versionNumber = parseInt(req.params.versionNumber, 10);
 
@@ -26,7 +27,7 @@ router.get("/:articleId/versions/:versionNumber", async (req, res) => {
   }
 });
 
-router.get("/:articleId/versions", async (req, res) => {
+router.get("/:articleId/versions", authMiddleware, async (req, res) => {
   const articleId = parseInt(req.params.articleId, 10);
   if (!articleId || isNaN(articleId)) {
     return res.status(400).json({ error: "Invalid Article ID" });

@@ -1,4 +1,5 @@
 import { store } from "@core/store/store";
+import { logout } from "@core/store/slices/auth/authSlice";
 
 const API_BASE_URL = "http://localhost:5000/";
 
@@ -18,13 +19,16 @@ export async function apiFetch(url, options = {}) {
     const response = await fetch(`${API_BASE_URL}${url}`, config);
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
       if (response.status === 401) {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
+        store.dispatch(logout());
+        if (!window.location.pathname.includes("/login")) {
+          window.location.href = "/login";
+        }
       }
 
-      const errorData = await response.json();
-      throw new Error(errorData.message || "API Error");
+      throw new Error(errorData.error || errorData.message || "API Error");
     }
 
     return response;

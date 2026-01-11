@@ -3,7 +3,7 @@ const router = express.Router();
 const workspaceService = require("../services/workspaceService");
 const authMiddleware = require("../middleware/auth");
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const workspaces = await workspaceService.getWorkspaces();
     res.json(workspaces);
@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/slug/:slug", async (req, res) => {
+router.get("/slug/:slug", authMiddleware, async (req, res) => {
   const slug = req.params.slug;
 
   try {

@@ -60,11 +60,12 @@ export function LoginForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        if (data?.error?.includes("email")) {
+        if (data?.error?.includes("email") || data?.error?.includes("Email")) {
           setEmailError("Please enter a valid email address");
         } else if (
           data?.error?.includes("password") ||
-          data?.error?.includes("Invalid")
+          data?.error?.includes("Invalid") ||
+          data?.error?.includes("Password")
         ) {
           setPasswordError("Incorrect password. Please try again");
         } else {
@@ -77,6 +78,18 @@ export function LoginForm() {
       navigate("/");
     } catch (err: any) {
       console.error("Login error:", err);
+      
+      if (err.message && typeof err.message === 'string') {
+        if (err.message.includes("Invalid") || err.message.includes("password") || err.message.includes("Password")) {
+          setPasswordError("Incorrect password. Please try again");
+          return;
+        }
+        if (err.message.includes("email") || err.message.includes("Email")) {
+          setEmailError("Please enter a valid email address");
+          return;
+        }
+      }
+      
       toast.showWarning("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
