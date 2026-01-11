@@ -57,7 +57,12 @@ const createArticle = async ({
   workspaceId,
   workspaceSlug,
   workspaceName,
+  authorId,
 }) => {
+  if (!authorId) {
+    throw new Error("Author ID is required");
+  }
+
   let finalWorkspaceId = workspaceId || null;
 
   if (workspaceSlug && !workspaceId) {
@@ -80,6 +85,7 @@ const createArticle = async ({
     content,
     attachments: attachments || [],
     workspaceId: finalWorkspaceId,
+    authorId,
   });
 
   await ArticleVersion.create({
@@ -94,7 +100,7 @@ const createArticle = async ({
   return article.id;
 };
 
-const updateArticle = async (articleId, updatedData) => {
+const updateArticle = async (articleId, updatedData, userId) => {
   const id = parseInt(articleId, 10);
   if (isNaN(id)) {
     throw new Error("Invalid article ID");
@@ -103,6 +109,10 @@ const updateArticle = async (articleId, updatedData) => {
   const article = await Article.findByPk(id);
   if (!article) {
     throw new Error("Article not found");
+  }
+
+  if (!userId) {
+    throw new Error("Access denied");
   }
 
   const { workspaceSlug, workspaceName, ...restData } = updatedData;
@@ -123,16 +133,8 @@ const updateArticle = async (articleId, updatedData) => {
     finalData.workspaceId = workspace.id;
   }
 
-  const hasChanges =
-    (finalData.title !== undefined && finalData.title !== article.title) ||
-    (finalData.content !== undefined && finalData.content !== article.content) ||
-    (finalData.attachments !== undefined &&
-      JSON.stringify(finalData.attachments) !== JSON.stringify(article.attachments)) ||
-    (finalData.workspaceId !== undefined &&
-      finalData.workspaceId !== article.workspaceId);
-
   let newVersion = null;
-  if (hasChanges) {
+  if (finalData.title || finalData.content) {
     const lastVersion = await ArticleVersion.findOne({
       where: { articleId },
       order: [["versionNumber", "DESC"]],
@@ -142,17 +144,10 @@ const updateArticle = async (articleId, updatedData) => {
 
     newVersion = await ArticleVersion.create({
       articleId,
-      title: finalData.title !== undefined ? finalData.title : article.title,
-      content:
-        finalData.content !== undefined ? finalData.content : article.content,
-      attachments:
-        finalData.attachments !== undefined
-          ? finalData.attachments
-          : article.attachments,
-      workspaceId:
-        finalData.workspaceId !== undefined
-          ? finalData.workspaceId
-          : article.workspaceId,
+      title: finalData.title || article.title,
+      content: finalData.content || article.content,
+      attachments: finalData.attachments || article.attachments,
+      workspaceId: finalData.workspaceId || article.workspaceId,
       versionNumber: nextVersion,
     });
   }
@@ -170,7 +165,7 @@ const updateArticle = async (articleId, updatedData) => {
   return newVersion ? newVersion.toJSON() : updatedArticle;
 };
 
-const deleteArticle = async (articleId) => {
+const deleteArticle = async (articleId, userId) => {
   const id = parseInt(articleId, 10);
   if (isNaN(id)) {
     return false;
@@ -179,6 +174,10 @@ const deleteArticle = async (articleId) => {
   const article = await Article.findByPk(id);
   if (!article) {
     return false;
+  }
+
+  if (!userId) {
+    throw new Error("Access denied");
   }
 
   await article.destroy();

@@ -2,24 +2,22 @@ import { IArticleVersion } from "./model/IArticleVersion";
 import styles from "./versionList.module.scss";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { apiFetch } from "@shared/utils/fetch";
 
 export const VersionList = ({ articleId }: { articleId: string | number }) => {
   const [versions, setVersions] = useState<IArticleVersion[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchVersions = async () => {
+    if (!articleId) return;
+
+    const loadVersions = async () => {
       try {
         setError(null);
-        const response = await fetch(
-          `http://localhost:5000/articles/${articleId}/versions`
-        );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        const response = await apiFetch(`articles/${articleId}/versions`);
         const data = await response.json();
+
         setVersions(data);
       } catch (err) {
         console.error("Error fetching versions:", err);
@@ -29,9 +27,7 @@ export const VersionList = ({ articleId }: { articleId: string | number }) => {
       }
     };
 
-    if (articleId) {
-      fetchVersions();
-    }
+    loadVersions();
   }, [articleId]);
 
   if (error) {
@@ -69,6 +65,7 @@ export const VersionList = ({ articleId }: { articleId: string | number }) => {
             to={`/articles/${articleId}/versions/id/${version.id}`}
             className={styles.fullLink}
           />
+
           <div className={styles.versionContent}>
             <span className={styles.versionNumber}>
               Version {version.versionNumber}

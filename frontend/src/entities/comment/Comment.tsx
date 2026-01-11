@@ -1,4 +1,6 @@
 import { Button } from "@shared/ui/button/Button";
+import { useSelector } from "react-redux";
+import { RootState } from "@core/store/store";
 import styles from "./comment.module.scss";
 import { IComment } from "./model/IComment";
 import delete_icon from "@assets/icons/delete_icon.svg";
@@ -6,6 +8,7 @@ import edit_icon from "@assets/icons/edit_icon.svg";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { useState } from "react";
 import { EditCommentForm } from "@features/editComment/EditCommentForm";
+import { apiFetch } from "@shared/utils/fetch";
 
 interface CommentProps {
   comment: IComment;
@@ -14,29 +17,27 @@ interface CommentProps {
 
 export const Comment = ({ comment, onUpdate }: CommentProps) => {
   const toast = useToast();
+  const token = useSelector((state: RootState) => state.auth.token);
   const [isEditingComment, setIsEditingComment] = useState(false);
 
-  const handleDeleteComment = () => {
+  const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
+
+  const isAuthor = currentUserId === comment.authorId;
+
+  const handleDeleteComment = async () => {
     if (!comment.id) return;
 
-    fetch(`http://localhost:5000/comments/${comment.id}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to delete comment");
-        }
-      })
-      .then(() => {
-        toast.showSuccess("Comment deleted successfully");
-        if (onUpdate) {
-          onUpdate();
-        }
-      })
-      .catch((error) => {
-        console.error("Error deleting comment:", error);
-        toast.showError("Failed to delete comment");
+    try {
+      await apiFetch(`comments/${comment.id}`, {
+        method: "DELETE",
       });
+
+      toast.showSuccess("Comment deleted successfully");
+      onUpdate?.();
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      toast.showError("Failed to delete comment");
+    }
   };
 
   const handleEditComment = () => {
@@ -68,22 +69,21 @@ export const Comment = ({ comment, onUpdate }: CommentProps) => {
       <div className={styles.comment__wrapper}>
         <div className={styles.comment__header}>
           <div className={styles.comment__info}>
-            <p className={styles.comment__author}>
-              {comment.author || "John Doe"}
-            </p>
+            <p className={styles.comment__author}>{comment.author}</p>
             <p className={styles.comment__date}>
               {new Date(comment.createdAt).toLocaleDateString()}
             </p>
           </div>
-
-          <div className={styles.comment__actions}>
-            <Button variant="tertiary" onClick={handleEditComment}>
-              <img src={edit_icon} alt="Edit" />
-            </Button>
-            <Button variant="tertiary" onClick={handleDeleteComment}>
-              <img src={delete_icon} alt="Delete" />
-            </Button>
-          </div>
+          {isAuthor && (
+            <div className={styles.comment__actions}>
+              <Button variant="tertiary" onClick={handleEditComment}>
+                <img src={edit_icon} alt="Edit" />
+              </Button>
+              <Button variant="tertiary" onClick={handleDeleteComment}>
+                <img src={delete_icon} alt="Delete" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

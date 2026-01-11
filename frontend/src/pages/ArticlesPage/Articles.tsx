@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { ArticleCard } from "@shared/ui/articleCard/ArticleCard";
 import styles from "./articles.module.scss";
+import { apiFetch } from "@shared/utils/fetch";
+import { IArticle } from "@shared/ui/articleCard/model/TArticle";
 
 export const Articles = () => {
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<IArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchArticles = async () => {
+    const loadArticles = async () => {
       try {
-        const response = await fetch("http://localhost:5000/articles");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await apiFetch("articles");
         const data = await response.json();
+
         setArticles(data);
         setError(null);
       } catch (error) {
@@ -25,8 +25,8 @@ export const Articles = () => {
       }
     };
 
-    fetchArticles();
-  });
+    loadArticles();
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

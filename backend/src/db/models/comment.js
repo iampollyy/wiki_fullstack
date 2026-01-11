@@ -18,9 +18,13 @@ Comment.init(
         key: "id",
       },
     },
-    author: {
-      type: DataTypes.STRING,
-      allowNull: true,
+    authorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Users",
+        key: "id",
+      },
     },
     content: {
       type: DataTypes.TEXT,
@@ -39,6 +43,10 @@ Comment.associate = function (models) {
   Comment.belongsTo(models.Article, {
     foreignKey: "articleId",
     as: "article",
+  });
+  Comment.belongsTo(models.User, {
+    foreignKey: "authorId",
+    as: "author",
   });
 };
 

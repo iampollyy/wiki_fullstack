@@ -1,0 +1,96 @@
+.loginform {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__container {
+    width: 100%;
+    max-width: 31.125rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__heading {
+    margin-bottom: 2rem;
+    color: var(--G900, #100f14);
+    text-align: center;
+    font-family: Poppins;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 2.5625rem;
+  }
+
+  &__form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--G400, #9794aa);
+    font-family: Poppins;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  &__input {
+    padding: 1.2rem 1.25rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--G300, #cbcad7);
+    font-family: Poppins;
+    font-size: 1rem;
+
+    &:focus {
+      outline: none;
+      border-color: #262532;
+    }
+  }
+
+  &__button {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    background-color: #1c1c23;
+    color: #fff;
+    font-family: Poppins;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #25252f;
+    }
+  }
+
+  p {
+    margin-top: 1rem;
+    text-align: center;
+    font-family: Poppins;
+    font-size: 0.875rem;
+    color: var(--G400, #9794aa);
+
+    a {
+      color: #1c1c23;
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.loginform__error {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #d32f2f;
+}

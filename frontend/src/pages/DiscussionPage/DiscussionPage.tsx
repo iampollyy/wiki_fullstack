@@ -4,17 +4,28 @@ import { CommentForm } from "@features/createComment/CommentForm";
 import { useEffect, useState } from "react";
 import { IComment } from "@entities/comment/model/IComment";
 import { useParams } from "react-router-dom";
+import { apiFetch } from "@shared/utils/fetch";
 
 export const DiscussionPage = () => {
   const { id } = useParams();
   const [comments, setComments] = useState<IComment[]>([]);
 
-  const loadComments = () => {
+  const loadComments = async () => {
     if (!id) return;
-    fetch(`http://localhost:5000/comments/article/${id}`)
-      .then((response) => response.json())
-      .then((data) => setComments(data.sort((a: IComment, b: IComment) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())))
-      .catch((error) => console.error("Failed to load comments:", error));
+
+    try {
+      const response = await apiFetch(`comments/article/${id}`);
+      const data: IComment[] = await response.json();
+
+      setComments(
+        data.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+      );
+    } catch (error) {
+      console.error("Failed to load comments:", error);
+    }
   };
 
   useEffect(() => {
@@ -24,6 +35,7 @@ export const DiscussionPage = () => {
   return (
     <section className={styles.discussionPage}>
       <h1 className={styles.discussionPage__title}>Discussion Page</h1>
+
       <CommentForm onCommentAdded={loadComments} />
 
       <div className={styles.discussionPage__wrapper}>
