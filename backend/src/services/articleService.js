@@ -111,7 +111,8 @@ const updateArticle = async (articleId, updatedData, userId) => {
     throw new Error("Article not found");
   }
 
-  if (!userId) {
+  const user = await User.findByPk(userId);
+  if (article.authorId !== userId || user.role !== "admin") {
     throw new Error("Access denied");
   }
 

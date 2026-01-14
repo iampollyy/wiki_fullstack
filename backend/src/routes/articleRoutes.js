@@ -79,7 +79,8 @@ router.put("/:id", authMiddleware, async (req, res) => {
     const updatedArticle = await articleService.updateArticle(
       id,
       updatedData,
-      req.user.userId
+      req.user.userId,
+      req.user.role
     );
     res.json(updatedArticle);
   } catch (error) {

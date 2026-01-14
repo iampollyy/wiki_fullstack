@@ -1,5 +1,6 @@
 const User = require("../db/models/user");
-const { notifyRoom } = require("./notificationService");
+const { notifyRoom } = require("../services/registrationService");
+
 const bcrypt = require("bcrypt");
 
 const registerUser = async ({ email, password, firstName, lastName }) => {
@@ -18,12 +19,7 @@ const registerUser = async ({ email, password, firstName, lastName }) => {
       lastName,
     });
     notifyRoom("registrations", `Registered successfully: ${email}`);
-    return {
-      id: newUser.id,
-      email: newUser.email,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-    };
+    return newUser.toJSON();
   }
 };
 

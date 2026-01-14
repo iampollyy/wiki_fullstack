@@ -5,4 +5,5 @@ export interface IRoute {
   path: string;
   element: ReactElement;
   isPrivate?: boolean;
+  isAdmin?: boolean;
 }

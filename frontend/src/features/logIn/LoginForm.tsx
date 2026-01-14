@@ -78,19 +78,13 @@ export function LoginForm() {
       navigate("/");
     } catch (err: any) {
       console.error("Login error:", err);
-      
-      if (err.message && typeof err.message === 'string') {
-        if (err.message.includes("Invalid") || err.message.includes("password") || err.message.includes("Password")) {
-          setPasswordError("Incorrect password. Please try again");
-          return;
-        }
-        if (err.message.includes("email") || err.message.includes("Email")) {
-          setEmailError("Please enter a valid email address");
-          return;
-        }
+
+      if (err.message && typeof err.message === "string") {
+        setPasswordError(err.message);
+        setEmailError(err.message);
       }
-      
-      toast.showWarning("Something went wrong. Please try again.");
+
+      toast.showError("Invalid credentials.");
     } finally {
       setIsLoading(false);
     }
