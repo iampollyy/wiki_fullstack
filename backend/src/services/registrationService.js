@@ -1,5 +1,5 @@
-const User = require("../db/models/user");
-const { notifyRoom } = require("../services/registrationService");
+const User = require("../db/models/User");
+const { notifyRoom } = require("../services/notificationService");
 
 const bcrypt = require("bcrypt");
 

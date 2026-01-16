@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const articleService = require("../services/articleService");
 const upload = require("../middleware/fileUpload");
-const authMiddleware = require("../middleware/auth");
+const authMiddleware = require("../middleware/authMiddleware");
+const articleAuthorMiddleware = require("../middleware/articleAuthorMiddleware");
 
 router.get("/", authMiddleware, async (req, res) => {
   try {
@@ -48,58 +49,69 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-router.delete("/:id", authMiddleware, async (req, res) => {
-  try {
-    const success = await articleService.deleteArticle(
-      req.params.id,
-      req.user.userId
-    );
+router.delete(
+  "/:id",
+  authMiddleware,
+  articleAuthorMiddleware,
+  async (req, res) => {
+    try {
+      const success = await articleService.deleteArticle(
+        req.params.id,
+        req.user.userId
+      );
 
-    if (!success) {
-      return res.status(404).json({ message: "The article not found" });
-    }
+      if (!success) {
+        return res.status(404).json({ message: "The article not found" });
+      }
 
-    res.json({ message: "Article deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting article:", error);
-    if (error.message === "Access denied") {
-      return res.status(403).json({ message: "Access denied" });
+      res.json({ message: "Article deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting article:", error);
+      if (error.message === "Access denied") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      res
+        .status(500)
+        .json({ message: "Error deleting article", error: error.message });
     }
-    res
-      .status(500)
-      .json({ message: "Error deleting article", error: error.message });
   }
-});
+);
 
-router.put("/:id", authMiddleware, async (req, res) => {
-  const id = req.params.id;
-  const updatedData = req.body;
+router.put(
+  "/:id",
+  authMiddleware,
+  articleAuthorMiddleware,
+  async (req, res) => {
+    const id = req.params.id;
+    const updatedData = req.body;
 
-  try {
-    const updatedArticle = await articleService.updateArticle(
-      id,
-      updatedData,
-      req.user.userId,
-      req.user.role
-    );
-    res.json(updatedArticle);
-  } catch (error) {
-    console.error("Error updating article:", error);
-    if (error.message === "Article not found") {
-      return res.status(404).json({ message: "Article not found" });
+    try {
+      const updatedArticle = await articleService.updateArticle(
+        id,
+        updatedData,
+        req.user.userId,
+        req.user.role
+      );
+      res.json(updatedArticle);
+    } catch (error) {
+      console.error("Error updating article:", error);
+      if (error.message === "Article not found") {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      if (error.message === "Access denied") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      res
+        .status(500)
+        .json({ message: "Error updating article", error: error.message });
     }
-    if (error.message === "Access denied") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-    res
-      .status(500)
-      .json({ message: "Error updating article", error: error.message });
   }
-});
+);
 
 router.post(
   "/upload-attachment",
   authMiddleware,
+  articleAuthorMiddleware,
   upload.single("attachment"),
   (req, res) => {
     try {

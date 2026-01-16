@@ -1,12 +1,3 @@
-const roles = {
-  admin: {
-    can: ["create", "edit", "delete", "view"],
-  },
-  user: {
-    can: ["create", "edit", "view"],
-  },
-};
-
 const rolesMiddleware = (requiredRoles) => {
   return (req, res, next) => {
     const userRole = req.user.role;

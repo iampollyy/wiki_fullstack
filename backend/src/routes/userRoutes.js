@@ -1,7 +1,7 @@
 const userService = require("../services/userService");
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middleware/auth");
+const authMiddleware = require("../middleware/authMiddleware");
 const rolesMiddleware = require("../middleware/rolesMiddleware");
 
 router.get(

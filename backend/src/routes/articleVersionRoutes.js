@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const articleVersionService = require("../services/articleVersionService");
-const authMiddleware = require("../middleware/auth");
+const authMiddleware = require("../middleware/authMiddleware");
 
 router.get("/:articleId/versions/:versionNumber", authMiddleware, async (req, res) => {
   const articleId = req.params.articleId;

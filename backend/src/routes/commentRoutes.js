@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const commentService = require("../services/commentService");
-const authMiddleware = require("../middleware/auth");
+const authMiddleware = require("../middleware/authMiddleware");
 router.get("/article/:articleId", authMiddleware, async (req, res) => {
   const articleId = req.params.articleId;
 
