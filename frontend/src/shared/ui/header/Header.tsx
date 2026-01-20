@@ -37,12 +37,19 @@ export const Header = () => {
             +
           </Button>
         )}
+        {
+          token && user && user.role === "admin" && (
+            <Link to="/user-management" className={styles.userManagementLink}>
+              User Management
+            </Link>
+          )
+        }
 
         {token ? (
           <div className={styles.user__section}>
             {user && (
               <button
-                className={styles.user__name}
+                className={styles.user__avatar}
                 onClick={() => setShowLogOut(!showLogOut)}
               >
                 {user.firstName.slice(0, 1).toUpperCase()}

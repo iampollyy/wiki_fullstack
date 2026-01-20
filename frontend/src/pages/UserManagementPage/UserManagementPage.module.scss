@@ -1,0 +1,181 @@
+.userManagementPage {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.statusMessage {
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.statusMessage_error {
+  color: #b91c1c;
+}
+
+.tableWrapper {
+  margin-top: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table thead {
+  background-color: #f9fafb;
+}
+
+.row:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.row:hover {
+  background-color: #f3f4f6;
+}
+
+.cell,
+.cell_head {
+  padding: 0.9rem 1.25rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.cell_head {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.cell {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.userIdentity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.userNames {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.userFullName {
+  font-weight: 600;
+  color: #111827;
+}
+
+.userId {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.email {
+  color: #374151;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.roleBadge_admin {
+  background-color: rgba(22, 163, 74, 0.08);
+  color: #15803d;
+}
+
+.roleBadge_user {
+  background-color: rgba(59, 130, 246, 0.08);
+  color: #1d4ed8;
+}
+
+.roleSelect {
+  width: 100%;
+  max-width: 11rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  font-size: 0.85rem;
+  color: #111827;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    border-color: #4f46e5;
+  }
+
+  &:focus-visible {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+@media (max-width: 768px) {
+  .userManagementPage {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .tableWrapper {
+    border-radius: 0.5rem;
+  }
+
+  .cell,
+  .cell_head {
+    padding: 0.75rem 0.75rem;
+  }
+}

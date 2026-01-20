@@ -30,6 +30,14 @@ User.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    role: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: "user",
+      validate: {
+        isIn: [["admin", "user"]],
+      },
+    },
   },
   {
     sequelize,

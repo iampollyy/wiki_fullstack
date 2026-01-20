@@ -1,4 +1,5 @@
 const Article = require("../db/models/article");
+const User = require("../db/models/user");
 const Workspace = require("../db/models/workspace");
 const { notifyRoom } = require("./notificationService");
 const ArticleVersion = require("../db/models/articleVersion");
@@ -100,7 +101,7 @@ const createArticle = async ({
   return article.id;
 };
 
-const updateArticle = async (articleId, updatedData, userId) => {
+const updateArticle = async (articleId, updatedData) => {
   const id = parseInt(articleId, 10);
   if (isNaN(id)) {
     throw new Error("Invalid article ID");
@@ -109,10 +110,6 @@ const updateArticle = async (articleId, updatedData, userId) => {
   const article = await Article.findByPk(id);
   if (!article) {
     throw new Error("Article not found");
-  }
-
-  if (!userId) {
-    throw new Error("Access denied");
   }
 
   const { workspaceSlug, workspaceName, ...restData } = updatedData;
@@ -165,7 +162,7 @@ const updateArticle = async (articleId, updatedData, userId) => {
   return newVersion ? newVersion.toJSON() : updatedArticle;
 };
 
-const deleteArticle = async (articleId, userId) => {
+const deleteArticle = async (articleId) => {
   const id = parseInt(articleId, 10);
   if (isNaN(id)) {
     return false;
@@ -174,10 +171,6 @@ const deleteArticle = async (articleId, userId) => {
   const article = await Article.findByPk(id);
   if (!article) {
     return false;
-  }
-
-  if (!userId) {
-    throw new Error("Access denied");
   }
 
   await article.destroy();

@@ -39,7 +39,6 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: validationErrors[0] || "Validation failed" });
     }
     
-    // Handle unique constraint errors
     if (err.name === "SequelizeUniqueConstraintError") {
       if (err.errors && err.errors.some((e) => e.path === "email")) {
         return res.status(400).json({ error: "This email is already in use" });

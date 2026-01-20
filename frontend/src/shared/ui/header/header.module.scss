@@ -9,7 +9,7 @@
     gap: 0.2rem;
   }
 
-  &__actions{
+  &__actions {
     display: flex;
     flex-direction: row;
     gap: 1.7rem;
@@ -93,27 +93,21 @@
     align-items: center;
   }
 
-  &__name {
-    padding: 0.3rem 0.5rem;
-    border-radius: 50%;
-    border: 1px solid #000;
-    background-color: rgba(228, 243, 252, 0.7);
-    cursor: pointer;
-
-    width: 32px;
-    height: 32px;
-
+  &__avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-weight: 600;
+    font-size: 0.95rem;
 
-       &:focus-visible {
+    &:focus-visible {
       outline: none;
-      box-shadow:
-        0 0 0 2px #ffffff,
-        0 0 0 4px var(--primary-color);
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--primary-color);
       transition: box-shadow 0.2s ease-in-out;
     }
   }
@@ -146,15 +140,11 @@
       &:hover {
         background-color: rgba(145, 5, 5, 0.08);
       }
-            &:focus-visible {
+      &:focus-visible {
         outline: none;
-        box-shadow:
-          0 0 0 2px #ffffff,
-          0 0 0 4px #910505;
+        box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #910505;
         transition: box-shadow 0.2s ease-in-out;
       }
     }
   }
 }
-
-

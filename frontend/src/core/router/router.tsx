@@ -7,6 +7,7 @@ import { WorkspacePage } from "@pages/WorkspacePage/WorkspacePage";
 import { LoginForm } from "@features/login/LoginForm";
 import { ArticleVersion } from "@pages/ArticleVersionPage/ArticleVersion";
 import { SignUpForm } from "@features/signUp/SignupForm";
+import { UserManagementPage } from "@pages/UserManagementPage/UserManagementPage";
 
 export const RoutesConfig: IRoute[] = [
   {
@@ -44,5 +45,10 @@ export const RoutesConfig: IRoute[] = [
     path: "/workspace/:slug",
     element: <WorkspacePage />,
     isPrivate: true,
+  },
+  {
+    path: "/user-management",
+    element: <UserManagementPage />,
+    isAdmin: true,
   },
 ];

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const workspaceService = require("../services/workspaceService");
-const authMiddleware = require("../middleware/auth");
+const authMiddleware = require("../middleware/authMiddleware");
 
 router.get("/", authMiddleware, async (req, res) => {
   try {
