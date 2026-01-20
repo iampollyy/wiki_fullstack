@@ -1,40 +1,40 @@
-import { useState } from "react";
 import styles from "./searchForm.module.scss";
-import { Button } from "@shared/ui/button/Button";
+import searchIcon from "@assets/icons/search.svg";
+import clearIcon from "@assets/icons/clear.svg";
 
-export const SearchForm = () => {
-  const [query, setQuery] = useState("");
+interface SearchFormProps {
+  value: string;
+  onChange: (value: string) => void;
+}
 
+export const SearchForm = ({ value, onChange }: SearchFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
   };
 
-  const onClear = () => setQuery("");
-
   return (
     <form className={styles.searchForm} onSubmit={handleSubmit}>
       <span className={styles.iconSearch} aria-hidden>
-        <img src="src/assets/icons/search.svg" />
+        <img src={searchIcon} alt="" />
       </span>
       <input
         type="text"
-        name="q"
-        placeholder="Search articles..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        name="search"
+        placeholder="Search articles by title or content..."
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         className={styles.searchForm__input}
-        aria-label="Search articles"
+        aria-label="Search articles by title or content"
       />
-      {query ? (
-        <Button
-          variant="tertiary"
+      {value ? (
+        <button
           type="button"
-          onClick={onClear}
+          onClick={() => onChange("")}
           className={styles.iconClear}
           aria-label="Clear search"
         >
-          <img src="src/assets/icons/clear.svg" />
-        </Button>
+          <img src={clearIcon} alt="" />
+        </button>
       ) : null}
     </form>
   );

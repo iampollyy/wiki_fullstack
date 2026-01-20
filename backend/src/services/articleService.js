@@ -1,11 +1,25 @@
+const { Op } = require("sequelize");
 const Article = require("../db/models/article");
 const User = require("../db/models/user");
 const Workspace = require("../db/models/workspace");
 const { notifyRoom } = require("./notificationService");
 const ArticleVersion = require("../db/models/articleVersion");
 
-const getArticles = async (workspaceId = null) => {
-  const where = workspaceId ? { workspaceId } : {};
+const getArticles = async (workspaceId = null, search = null) => {
+  const conditions = [];
+  if (workspaceId) conditions.push({ workspaceId });
+  const q = search != null && String(search).trim() !== "" ? String(search).trim() : null;
+  if (q) {
+    const pattern = `%${q}%`;
+    conditions.push({
+      [Op.or]: [
+        { title: { [Op.iLike]: pattern } },
+        { content: { [Op.iLike]: pattern } },
+      ],
+    });
+  }
+  const where = conditions.length > 0 ? { [Op.and]: conditions } : {};
+
   const articles = await Article.findAll({
     where,
     attributes: [
