@@ -3,6 +3,7 @@ import { ArticleCard } from "@shared/ui/articleCard/ArticleCard";
 import styles from "./articles.module.scss";
 import { apiFetch } from "@shared/utils/fetch";
 import { IArticle } from "@shared/ui/articleCard/model/TArticle";
+import { SearchForm } from "@features/search/SearchForm";
 
 export const Articles = () => {
   const [articles, setArticles] = useState<IArticle[]>([]);
@@ -36,7 +37,7 @@ export const Articles = () => {
       <h2 className="sr-only" id="articlesListRes">
         Articles Results
       </h2>
-
+      <SearchForm />
       <ul className={styles.articlesList}>
         {articles
           .sort((a, b) => a.title.localeCompare(b.title))
