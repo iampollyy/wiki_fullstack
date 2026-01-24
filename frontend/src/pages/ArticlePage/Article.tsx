@@ -7,6 +7,7 @@ import { TextEditor } from "@features/createArticle/TextEditor";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { VersionSubmenu } from "@shared/ui/versionSubmenu/versionSubmenu";
 import { apiFetch } from "@shared/utils/fetch";
+import download_icon from "@assets/icons/download_icon.svg";
 
 export const Article = () => {
   const { id } = useParams();
@@ -84,6 +85,9 @@ export const Article = () => {
               <VersionSubmenu articleId={article.id} />
             </div>
             <div className={styles.article__actionsRight}>
+              <Button variant="tertiary">
+                Download <img src={download_icon} alt="" />
+              </Button>
               <Button variant="tertiary" onClick={handleEdit}>
                 Edit
               </Button>
