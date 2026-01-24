@@ -7,7 +7,8 @@ const articleAuthorMiddleware = require("../middleware/articleAuthorMiddleware")
 
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const articles = await articleService.getArticles();
+    const { search } = req.query;
+    const articles = await articleService.getArticles(null, search);
     res.json(articles);
   } catch (err) {
     console.error("Error fetching articles:", err);
