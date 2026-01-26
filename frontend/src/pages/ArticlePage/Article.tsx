@@ -56,6 +56,19 @@ export const Article = () => {
     setIsEditing(false);
   };
 
+  const handleDownload = async () => {
+    if (!article) return;
+    const articleId = article?.id ?? id;
+
+    try {
+      await apiFetch(`articles/${articleId}/download}`, {
+        method: "GET",
+      });
+    } catch (error) {
+      console.error("Failed to download article:", error);
+    }
+  };
+
   if (!article) return <p>Loading...</p>;
 
   return (
@@ -85,7 +98,7 @@ export const Article = () => {
               <VersionSubmenu articleId={article.id} />
             </div>
             <div className={styles.article__actionsRight}>
-              <Button variant="tertiary">
+              <Button variant="tertiary" onClick={handleDownload}>
                 Download <img src={download_icon} alt="" />
               </Button>
               <Button variant="tertiary" onClick={handleEdit}>

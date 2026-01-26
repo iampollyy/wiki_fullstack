@@ -4,11 +4,15 @@ const User = require("../db/models/user");
 const Workspace = require("../db/models/workspace");
 const { notifyRoom } = require("./notificationService");
 const ArticleVersion = require("../db/models/articleVersion");
+const PDFDocument = require("pdfkit");
 
 const getArticles = async (workspaceId = null, search = null) => {
   const conditions = [];
   if (workspaceId) conditions.push({ workspaceId });
-  const q = search != null && String(search).trim() !== "" ? String(search).trim() : null;
+  const q =
+    search != null && String(search).trim() !== ""
+      ? String(search).trim()
+      : null;
   if (q) {
     const pattern = `%${q}%`;
     conditions.push({
@@ -191,10 +195,54 @@ const deleteArticle = async (articleId) => {
   return true;
 };
 
+const generateArticlePDF = async (articleId, res) => {
+  const article = await getArticleById(articleId);
+  if (!article) {
+    throw new Error("Article not found");
+  }
+
+  const doc = new PDFDocument({
+    size: "A4",
+    margin: 50,
+  });
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=article_${article.id}.pdf`,
+  );
+
+  doc.pipe(res);
+
+  doc
+    .fontSize(22)
+    .font("Helvetica-Bold")
+    .text(article.title, { align: "center" });
+
+  doc.moveDown(1.5);
+
+  doc
+    .fontSize(10)
+    .fillColor("gray")
+    .text(`Workspace: ${article.workspace?.name || "-"}`);
+  doc.text(`Created: ${new Date(article.createdAt).toLocaleDateString()}`);
+
+  doc.moveDown();
+  doc.fillColor("black");
+
+  doc.fontSize(12).font("Helvetica").text(article.content, {
+    align: "left",
+    lineGap: 5,
+  });
+
+  doc.end();
+};
+
 module.exports = {
   getArticles,
   getArticleById,
   createArticle,
   updateArticle,
   deleteArticle,
+  generateArticlePDF,
 };
