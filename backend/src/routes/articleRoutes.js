@@ -129,5 +129,14 @@ router.post(
     }
   }
 );
+router.get("/:id/download", authMiddleware, async (req, res) => {
+  try {
+    await articleService.generateArticlePDF(req.params.id, res);
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    res.status(500).json({ error: "Error generating PDF" });
+  }
+});
+
 
 module.exports = router;

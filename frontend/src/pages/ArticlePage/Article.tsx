@@ -7,6 +7,7 @@ import { TextEditor } from "@features/createArticle/TextEditor";
 import { FilePreviewList } from "@shared/ui/preview/FilePreviewList";
 import { VersionSubmenu } from "@shared/ui/versionSubmenu/versionSubmenu";
 import { apiFetch } from "@shared/utils/fetch";
+import download_icon from "@assets/icons/download_icon.svg";
 
 export const Article = () => {
   const { id } = useParams();
@@ -55,6 +56,33 @@ export const Article = () => {
     setIsEditing(false);
   };
 
+  const handleDownload = async () => {
+    if (!article) return;
+    const articleId = article?.id ?? id;
+
+    try {
+      const response = await apiFetch(`articles/${articleId}/download`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `article_${articleId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Failed to download article:", error);
+    }
+  };
+
   if (!article) return <p>Loading...</p>;
 
   return (
@@ -84,6 +112,9 @@ export const Article = () => {
               <VersionSubmenu articleId={article.id} />
             </div>
             <div className={styles.article__actionsRight}>
+              <Button variant="tertiary" onClick={handleDownload}>
+                Download <img src={download_icon} alt="" />
+              </Button>
               <Button variant="tertiary" onClick={handleEdit}>
                 Edit
               </Button>
