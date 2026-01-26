@@ -5,6 +5,7 @@ const Workspace = require("../db/models/workspace");
 const { notifyRoom } = require("./notificationService");
 const ArticleVersion = require("../db/models/articleVersion");
 const PDFDocument = require("pdfkit");
+const { convert } = require("html-to-text");
 
 const getArticles = async (workspaceId = null, search = null) => {
   const conditions = [];
@@ -230,7 +231,12 @@ const generateArticlePDF = async (articleId, res) => {
   doc.moveDown();
   doc.fillColor("black");
 
-  doc.fontSize(12).font("Helvetica").text(article.content, {
+  const plainTextContent = convert(article.content, {
+    wordwrap: 80,
+    preserveNewlines: true,
+  });
+
+  doc.fontSize(12).font("Helvetica").text(plainTextContent, {
     align: "left",
     lineGap: 5,
   });
