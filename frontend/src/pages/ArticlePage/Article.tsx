@@ -61,9 +61,23 @@ export const Article = () => {
     const articleId = article?.id ?? id;
 
     try {
-      await apiFetch(`articles/${articleId}/download}`, {
+      const response = await apiFetch(`articles/${articleId}/download`, {
         method: "GET",
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to download PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `article_${articleId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (error) {
       console.error("Failed to download article:", error);
     }
